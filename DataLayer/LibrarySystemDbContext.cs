@@ -35,26 +35,18 @@ namespace DataLayer
         {
             modelBuilder.Entity<User>().HasIndex(u => u.Name).IsUnique();
 
-                modelBuilder.Entity<ReadingCard>()
+            modelBuilder.Entity<ReadingCard>()
             .Property(p => p.DateCreated)
             .HasConversion(new DateOnlyConverter())
             .HasColumnType("date")
             .IsRequired();
 
-            //for the BooksGenres class if I choose to add it
-            /*modelBuilder.Entity<BookGenre>()
-            .HasKey(bg => new { bg.BookId, bg.GenreId });
+            modelBuilder.Entity<Book>()
+            .Property(p => p.PublicationDate)
+            .HasConversion(new DateOnlyConverter())
+            .HasColumnType("date")
+            .IsRequired();
 
-            modelBuilder.Entity<BookGenre>()
-            .HasOne(bg => bg.Book)
-            .WithMany(b => b.BookGenres)
-            .HasForeignKey(bg => bg.BookId);
-
-            modelBuilder.Entity<BookGenre>()
-            .HasOne(bg => bg.Genre)
-            .WithMany(g => g.BookGenres)
-            .HasForeignKey(bg => bg.GenreId);
-            */
             base.OnModelCreating(modelBuilder);
         }
 

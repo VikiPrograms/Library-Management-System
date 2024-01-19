@@ -26,15 +26,16 @@ namespace BusinessLayer
 
         public ReadingCard()
         {
+            BorrowedBooks = 0;
             DateCreated = DateOnly.FromDateTime(DateTime.Now);
             Books = new List<Book>();
         }
        
         public ReadingCard( User user, int borrowedBooks = 0)
         {
-            BorrowedBooks = borrowedBooks;
             Name = user.Name;
             User = user;
+            BorrowedBooks = borrowedBooks;
             DateCreated = DateOnly.FromDateTime(DateTime.Now);
             Books = new List<Book>();
         }
