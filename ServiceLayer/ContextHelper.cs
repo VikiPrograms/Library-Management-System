@@ -15,9 +15,9 @@ namespace ServiceLayer
         private static GenreContext genreContext;
         private static ReadingCardContext readingCardContext;
 
-        public static LibrarySystemDbContext GetDbContext()
+        public static LibrarySystemDbContext GetDbContext(bool useNewContext = false)
         {
-            if(dbContext == null)
+            if(dbContext == null || useNewContext)
             {
                 SetDbContext();
             }
@@ -29,9 +29,9 @@ namespace ServiceLayer
             dbContext = new LibrarySystemDbContext();
         }
 
-        public static AuthorContext GetAuthorContext()
+        public static AuthorContext GetAuthorContext(bool useNewContext = false)
         {
-            if(authorContext == null)
+            if(authorContext == null || useNewContext)
             {
                 SetAuthorContext();
             }
@@ -43,9 +43,9 @@ namespace ServiceLayer
             authorContext = new AuthorContext(GetDbContext());
         }
 
-        public static BookContext GetBookContext()
+        public static BookContext GetBookContext(bool useNewContext = false)
         {
-            if(bookContext == null)
+            if(bookContext == null || useNewContext)
             {
                 SetBookContext();
             }
@@ -57,9 +57,9 @@ namespace ServiceLayer
             bookContext = new BookContext(GetDbContext());
         }
 
-        public static GenreContext GetGenreContext()
+        public static GenreContext GetGenreContext(bool useNewContext = false)
         {
-            if(genreContext == null)
+            if(genreContext == null || useNewContext)
             {
                 SetGenreContext();
             }
@@ -70,9 +70,9 @@ namespace ServiceLayer
             genreContext = new GenreContext(GetDbContext());
         }
 
-        public static ReadingCardContext ReadingCardContext()
+        public static ReadingCardContext GetReadingCardContext(bool useNewContext = false)
         {
-            if(readingCardContext == null)
+            if(readingCardContext == null || useNewContext)
             {
                 SetAuthorContext();
             }

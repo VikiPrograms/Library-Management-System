@@ -1,0 +1,45 @@
+﻿@page "/genre/index"
+@using BusinessLayer;
+@using ServiceLayer;
+
+<h3>Index</h3>
+<a href="genre/create">Create</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Genre genre in model)
+        {
+            <tr>
+                <td>
+                    @genre.Name
+                </td>
+                <td>
+                    <a href="genre/update/@genre.GenreId/@genre.Name">Edit</a> |
+                    <a href="genre/details/@genre.GenreId">Details</a> |
+                    <a href="genre/delete/@genre.GenreId/@genre.Name">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private GenericManager<Genre, int> genreManager = new GenericManager<Genre, int>(ContextHelper.GetGenreContext());
+    private IEnumerable<Genre> model = new List<Genre>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await genreManager.ReadAllAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+}

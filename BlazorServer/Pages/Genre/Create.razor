@@ -1,0 +1,45 @@
+﻿@page "/genre/create"
+@using BlazorServer.Services
+@using ServiceLayer;
+@using BusinessLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<Genre> logger;
+@inject NavigationManager navigationManager;
+
+<h3>Create Author</h3>
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label for="name">Genre</label>
+    <InputText id="name" @bind-Value="model.Name" />
+
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+@code {
+    private Genre model = new();
+    private GenericManager<Genre, int> genreManager = new(ContextHelper.GetGenreContext());
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await genreManager.CreateAsync(model);
+            logger.Log(LogLevel.Information, "Genre created successfully!");
+            navigationManager.NavigateTo("genre/index", false);
+        }
+        catch (Exception ex)
+        {
+            logger.Log(LogLevel.Error, ex.Message);//not sure if this will give me some problems in the future
+        }
+    }
+
+}

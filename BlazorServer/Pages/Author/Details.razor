@@ -1,0 +1,64 @@
+﻿@page "/author/details/{AuthorId:int}"
+@using BusinessLayer
+@using ServiceLayer
+
+<h3>Author Details</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Author
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Books
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @model.AuthorId
+            </td>
+            <td>
+                @model.Name
+            </td>
+            @if (model.Books.Count != 0)
+            {
+                <td>
+                    <select value="@ISBN">
+                        @foreach (Book book in model.Books)
+                        {
+                            <option value="@book.ISBN">@book.Title</option>
+                        }
+                    </select>
+                </td>
+            }
+        </tr>
+    </tbody>
+</table>
+
+<div>
+    <a href="author/index">Back to List</a>
+</div>
+
+
+@code {
+    private Author model = new ();
+    private GenericManager<Author, int> authorManager = new(ContextHelper.GetAuthorContext());
+    private string ISBN;
+
+    [Parameter]
+    public int AuthorId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await authorManager.ReadAsync(AuthorId, true);
+        ISBN = model.Books.Count != 0 ? model.Books[0].ISBN : string.Empty;
+        await base.OnInitializedAsync();
+    }
+}

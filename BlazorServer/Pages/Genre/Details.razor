@@ -1,0 +1,64 @@
+﻿@page "/genre/details/{GenreId:int}"
+@using BusinessLayer
+@using ServiceLayer
+
+<h3>Genre Details</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Genre
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Books
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @model.GenreId
+            </td>
+            <td>
+                @model.Name
+            </td>
+            @if (model.Books.Count != 0)
+            {
+                <td>
+                    <select value="@ISBN">
+                        @foreach (Book book in model.Books)
+                        {
+                            <option value="@book.ISBN">@book.Title</option>
+                        }
+                    </select>
+                </td>
+            }
+        </tr>
+    </tbody>
+</table>
+
+<div>
+    <a href="genre/index">Back to List</a>
+</div>
+
+
+@code {
+    private Genre model = new();
+    private GenericManager<Genre, int> genreManager = new(ContextHelper.GetGenreContext());
+    private string ISBN;
+
+    [Parameter]
+    public int GenreId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await genreManager.ReadAsync(GenreId, true);
+        ISBN = model.Books.Count != 0 ? model.Books[0].ISBN : string.Empty;
+        await base.OnInitializedAsync();
+    }
+}

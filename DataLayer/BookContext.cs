@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class BookContext:IDb<Book, string>
+    public class BookContext:IDb<Book, string>, IQueryDb<Book, string>
     {
         private readonly LibrarySystemDbContext dbContext;
 
@@ -51,6 +51,11 @@ namespace DataLayer
             {
                 throw;
             }
+        }
+
+        public bool Exists(string key)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ICollection<Book>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)

@@ -1,0 +1,55 @@
+﻿@page "/genre/delete/{GenreId:int}/{Name}"
+@using BlazorServer.Services
+@using BusinessLayer;
+@using ServiceLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<Genre> logger;
+@inject NavigationManager navigationManager;
+
+<h3>Delete Genre</h3>
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label for="name">Name</label>
+    <InputText id="name" @bind-Value="model.Name" disabled />
+
+    <button type="submit">Delete</button>
+
+</EditForm>
+
+@code {
+
+    private Genre model = new();
+    private GenericManager<Genre, int> genreManager = new(ContextHelper.GetGenreContext());
+
+    [Parameter]
+    public int GenreId { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        model = new Genre(GenreId, Name);
+        return base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            model.GenreId = GenreId;
+            model.Name = Name;
+            await genreManager.DeleteAsync(model.GenreId);
+            logger.Log(LogLevel.Information, "Genre deleted successfully!");
+            //throw new ArgumentException("Testing custom error handling!");
+            navigationManager.NavigateTo("genre/index");
+        }
+        catch (Exception ex) // Handle concrete exceptions first!
+        {
+            logger.Log(LogLevel.Error, ex.Message);
+        }
+    }
+}

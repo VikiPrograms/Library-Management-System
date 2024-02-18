@@ -14,7 +14,7 @@ namespace BusinessLayer
         [Required]
         [StringLength(75)]
         public string Name { get; set; }
-        public ICollection<Book> Books { get; set; }
+        public List<Book> Books { get; set; }
 
         public Genre()
         {
@@ -25,6 +25,11 @@ namespace BusinessLayer
         {
             Name = name;
             Books = new List<Book>();
+        }
+
+        public Genre(int genreId, string name) : this(name)
+        {
+            GenreId = genreId;
         }
     }
 }

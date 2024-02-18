@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class ReadingCardContext : IDb<ReadingCard, int>
+    public class ReadingCardContext : IDb<ReadingCard, int>, IQueryDb<ReadingCard, int>
     {
         private LibrarySystemDbContext dbContext;
 
@@ -57,7 +57,7 @@ namespace DataLayer
             {
                 ReadingCard readingCardFromDb = await ReadAsync(key, false, false);
 
-                if(readingCardFromDb == null)
+                if(readingCardFromDb != null)
                 {
                     dbContext.ReadingCards.Remove(readingCardFromDb);
                     dbContext.SaveChangesAsync();
@@ -67,6 +67,11 @@ namespace DataLayer
             {
                 throw;
             }
+        }
+
+        public bool Exists(int key)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ICollection<ReadingCard>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)

@@ -22,8 +22,11 @@ namespace TestingLayer
                 genresContext = new GenreContext(dbContext);
                 readingCardsContext = new ReadingCardContext(dbContext);
 
-                TestAuthorsContextCreate();
-                TestAuthorsContextRead();
+                TestAuthorsContextCreate().Wait();
+                TestAuthorsContextRead().Wait();
+                TestAuthorsContextReadAll();
+                TestAuthorContextUpdate();
+                TestAuthorContextDeleteAsync();
             }
             catch(Exception)
             {
@@ -31,7 +34,7 @@ namespace TestingLayer
             }
         }
 
-        static async void TestAuthorsContextCreate()
+        static async Task TestAuthorsContextCreate()
         {
             Console.WriteLine("Author added successfully :)");//read
             Author author = new Author("George Orwell");
@@ -40,7 +43,7 @@ namespace TestingLayer
             Console.WriteLine("Author added successfully :)");//not read
         }
 
-        static async void TestAuthorsContextRead()
+        static async Task TestAuthorsContextRead()
         {
             Console.WriteLine("The info about the author has been red successfully!");//only this is read
             Author author1 = await authorsContext.ReadAsync(1);//gives THE SAME System.UnhandelException IN THE AUTHORSCONTEXT ERROR
@@ -49,15 +52,47 @@ namespace TestingLayer
             Console.WriteLine("The info about the author has been red successfully!");//not read
         }
 
-        static async void TestAuthorsContextReadAll()
+        static async Task TestAuthorsContextReadAll()
         {
-            IQueryable<Author> authors = (IQueryable<Author>)await authorsContext.ReadAllAsync();
+            IEnumerable<Author> authors = await authorsContext.ReadAllAsync();
 
             foreach(Author author in authors)
             {
                 Console.WriteLine(author);
             }
         }
+
+        static async Task TestAuthorContextUpdate()
+        {
+            Author authorFromDb = await authorsContext.ReadAsync(3);
+            Console.WriteLine("Before: ");
+            Console.WriteLine(authorFromDb);
+
+            authorFromDb.Name = "TOshko ot 11J";
+            await authorsContext.UpdateAsync(authorFromDb);
+
+            Author updatedAuthorFromDb = await authorsContext.ReadAsync(3);
+            Console.WriteLine("After: ");
+            Console.WriteLine(updatedAuthorFromDb);
+        }
+        static async Task TestAuthorContextDeleteAsync()
+        {
+            Console.Write("Id = ");
+            int id = Convert.ToInt32(Console.ReadLine());
+            Author authorFromDb = await authorsContext.ReadAsync(id);
+
+            Console.WriteLine("Before: {0}", authorFromDb);
+            await authorsContext.DeleteAsync(id);
+
+            authorFromDb = await authorsContext.ReadAsync(id);
+
+            if (authorFromDb == null)
+            {
+                Console.WriteLine($"Author with Id {id} deleted successfully!");
+            }
+        }
+
+
         /*
           static void TestAuthorContextUpdate()
         {

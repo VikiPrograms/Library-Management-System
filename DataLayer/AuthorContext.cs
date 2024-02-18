@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class AuthorContext : IDb<Author, int>
+    public class AuthorContext : IDb<Author, int>, IQueryDb<Author, int>
     {
         private readonly LibrarySystemDbContext dbContext;
 
@@ -49,7 +49,7 @@ namespace DataLayer
             {
                 Author authorFromDb = await ReadAsync(key, false, false);
 
-                if (authorFromDb is null)
+                if (authorFromDb != null)
                 {
                     dbContext.Authors.Remove(authorFromDb);
                     await dbContext.SaveChangesAsync();
@@ -63,6 +63,11 @@ namespace DataLayer
             {
                 throw;
             }
+        }
+
+        public bool Exists(int key)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ICollection<Author>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
