@@ -26,14 +26,14 @@ namespace DataLayer
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=PC\\SQLEXPRESS;Database=LibrarySystemDbContext;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=PC\\SQLEXPRESS;Database=LibrarySystemDbContext;Trusted_Connection=True;TrustServerCertificate=True");
             }
             base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().HasIndex(u => u.Name).IsUnique();
+            modelBuilder.Entity<User>().HasIndex(u => u.Name).IsUnique();   
 
             modelBuilder.Entity<ReadingCard>()
             .Property(p => p.DateCreated)

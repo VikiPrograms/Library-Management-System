@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class GenreContext : IDb<Genre, int>
+    public class GenreContext : IDb<Genre, int>, IQueryDb<Genre, int>
     {
 
         private LibrarySystemDbContext dbContext;
@@ -52,7 +52,7 @@ namespace DataLayer
             {
                 Genre genreFromDb = await ReadAsync(key, false, false);
 
-                if (genreFromDb is null)
+                if (genreFromDb != null)
                 {
                     dbContext.Genres.Remove(genreFromDb);
                     await dbContext.SaveChangesAsync();
@@ -66,6 +66,11 @@ namespace DataLayer
             {
                 throw;
             }
+        }
+
+        public bool Exists(int key)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ICollection<Genre>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)

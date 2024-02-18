@@ -1,0 +1,28 @@
+﻿@page "/"
+@using BlazorServer.Services;
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<label id="error" class="text-danger">@error</label>
+
+@code
+{
+    private string error;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await base.OnInitializedAsync();
+            error = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            error = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+
+    }
+}

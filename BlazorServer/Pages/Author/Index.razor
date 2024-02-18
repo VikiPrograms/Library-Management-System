@@ -1,0 +1,45 @@
+﻿@page "/author/index"
+@using BusinessLayer;
+@using ServiceLayer;
+
+<h3>Index</h3>
+<a href="author/create">Create</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Author author in model)
+        {
+            <tr>
+                <td>
+                    @author.Name
+                </td>
+                <td>
+                    <a href="author/update/@author.AuthorId/@author.Name">Edit</a> |
+                    <a href="author/details/@author.AuthorId">Details</a> |
+                    <a href="author/delete/@author.AuthorId/@author.Name">Delete</a> 
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private GenericManager<Author, int> authorManager = new GenericManager<Author, int>(ContextHelper.GetAuthorContext());
+    private IEnumerable<Author> model = new List<Author>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await authorManager.ReadAllAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+}

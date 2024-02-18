@@ -1,0 +1,61 @@
+﻿@page "/author/update/{AuthorId:int}/{Name}"
+@using BusinessLayer;
+@using ServiceLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<Author> logger;
+@inject NavigationManager navigationManager;
+
+<h3>Update Author</h3>
+
+<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputSelect id="id" @bind-Value="model.AuthorId">
+        <option value="@model.AuthorId" disabled> @model.AuthorId </option>
+    </InputSelect>
+
+    <label for="name">Name</label>
+    <InputText id="name" @bind-Value="model.Name" />
+
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+<div>
+    <a href="author/index">Back to List</a>
+</div>
+
+@code {
+    private Author model;
+    private GenericManager<Author, int> authorManager = new(ContextHelper.GetAuthorContext());
+    private EditContext editContext;
+
+    [Parameter]
+    public int AuthorId { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = new Author(AuthorId, Name);
+        editContext = new EditContext(model);
+        await base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await authorManager.UpdateAsync(model);
+            logger.Log(LogLevel.Information, "Author updated successfully!");
+            navigationManager.NavigateTo("author/index", false);
+        }
+        catch (Exception ex)
+        {
+            // Handle concrete exceptions first!
+            logger.Log(LogLevel.Error, ex.Message);
+        }
+    }
+}

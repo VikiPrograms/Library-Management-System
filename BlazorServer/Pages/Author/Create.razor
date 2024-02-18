@@ -1,0 +1,45 @@
+﻿@page "/author/create"
+@using BlazorServer.Services
+@using ServiceLayer;
+@using BusinessLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<Author> logger;
+@inject NavigationManager navigationManager;
+
+<h3>Create Author</h3>
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label for="name">Author</label>
+    <InputText id="name" @bind-Value="model.Name" />
+
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+@code {
+    private Author model = new();
+    private GenericManager<Author, int> authorManager = new(ContextHelper.GetAuthorContext());
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await authorManager.CreateAsync(model);
+            logger.Log(LogLevel.Information, "Author created successfully!");
+            navigationManager.NavigateTo("author/index", false);
+        }
+        catch(Exception ex)
+        {
+            logger.Log(LogLevel.Error, ex.Message);//not sure if this will give me some problems in the future
+        }
+    }
+
+}

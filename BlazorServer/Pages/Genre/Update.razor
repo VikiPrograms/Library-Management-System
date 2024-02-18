@@ -1,0 +1,61 @@
+﻿@page "/genre/update/{GenreId:int}/{Name}"
+@using BusinessLayer;
+@using ServiceLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<Genre> logger;
+@inject NavigationManager navigationManager;
+
+<h3>Update Genre</h3>
+
+<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputSelect id="id" @bind-Value="model.GenreId">
+        <option value="@model.GenreId" disabled> @model.GenreId </option>
+    </InputSelect>
+
+    <label for="name">Name</label>
+    <InputText id="name" @bind-Value="model.Name" />
+
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+<div>
+    <a href="genre/index">Back to List</a>
+</div>
+
+@code {
+    private Genre model;
+    private GenericManager<Genre, int> genreManager = new(ContextHelper.GetGenreContext());
+    private EditContext editContext;
+
+    [Parameter]
+    public int GenreId { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = new Genre(GenreId, Name);
+        editContext = new EditContext(model);
+        await base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await genreManager.UpdateAsync(model);
+            logger.Log(LogLevel.Information, "Genre deleted successfully!");            
+            navigationManager.NavigateTo("genre/index", false);
+        }
+        catch (Exception ex) // Handle concrete exceptions first!
+        {
+            logger.Log(LogLevel.Error, ex.Message);
+        }
+    }
+}
+

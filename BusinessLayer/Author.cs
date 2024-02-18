@@ -14,7 +14,7 @@ namespace BusinessLayer
         [Required]
         [MaxLength(75)]
         public string Name { get; set; }
-        public ICollection<Book> Books { get; set; }
+        public List<Book> Books { get; set; }
 
         public Author()
         {
@@ -25,6 +25,11 @@ namespace BusinessLayer
         {
             Name = name;
             Books = new List<Book>();
+        }
+
+        public Author(int authorId, string name) : this(name)
+        {
+            AuthorId = authorId;
         }
     }
 }

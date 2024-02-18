@@ -1,0 +1,55 @@
+﻿@page "/author/delete/{AuthorId:int}/{Name}"
+@using BlazorServer.Services
+@using BusinessLayer;
+@using ServiceLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<Author> logger;
+@inject NavigationManager navigationManager;
+
+<h3>Delete Author</h3>
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label for="name">Name</label>
+    <InputText id="name" @bind-Value="model.Name" disabled />
+
+    <button type="submit">Delete</button>
+
+</EditForm>
+
+@code {
+
+    private Author model = new();
+    private GenericManager<Author, int> authorManager = new(ContextHelper.GetAuthorContext());
+
+    [Parameter]
+    public int AuthorId { get; set; }
+
+    [Parameter]
+    public string Name { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        model = new Author(AuthorId, Name);
+        return base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            model.AuthorId = AuthorId;
+            model.Name = Name;
+            await authorManager.DeleteAsync(model.AuthorId);
+            logger.Log(LogLevel.Information, "Author deleted successfully!");
+            //throw new ArgumentException("Testing custom error handling!");
+            navigationManager.NavigateTo("author/index");
+        }
+        catch (Exception ex) // Handle concrete exceptions first!
+        {
+            logger.Log(LogLevel.Error, ex.Message);
+        }
+    }
+}

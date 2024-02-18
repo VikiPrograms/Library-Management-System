@@ -1,0 +1,45 @@
+﻿@page "/book/create"
+@using BlazorServer.Services
+@using ServiceLayer;
+@using BusinessLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<Book> logger;
+@inject NavigationManager navigationManager;
+
+<h3>Create Book</h3>
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label for="name">Book</label>
+    <InputText id="ISBN" @bind-Value="model.ISBN" />
+
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+@code {
+    private Book model = new();
+    private GenericManager<Book, string> bookManager = new(ContextHelper.GetBookContext());
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await bookManager.CreateAsync(model);
+            logger.Log(LogLevel.Information, "Book created successfully!");
+            navigationManager.NavigateTo("book/index", false);
+        }
+        catch (Exception ex)
+        {
+            logger.Log(LogLevel.Error, ex.Message);//not sure if this will give me some problems in the future
+        }
+    }
+
+}
