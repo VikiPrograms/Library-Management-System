@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class AuthorContext : IDb<Author, int>, IQueryDb<Author, int>
+    public class AuthorContext : IDb<Author, int>
     {
         private readonly LibrarySystemDbContext dbContext;
 
@@ -70,7 +70,7 @@ namespace DataLayer
             throw new NotImplementedException();
         }
 
-        public async Task<ICollection<Author>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
+        public async Task<List<Author>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace DataLayer
                 { 
                     await CreateAsync(item);
                 }
-                dbContext.Entry(authorFromDb).CurrentValues.SetValues(item);//why have i written that??? i copy pasted it from mr Iliev's code and don't know wtf this is
+                //dbContext.Entry(authorFromDb).CurrentValues.SetValues(item);//why have i written that??? i copy pasted it from mr Iliev's code and don't know wtf this is
 
                 if (useNavigationalProperties)
                 {

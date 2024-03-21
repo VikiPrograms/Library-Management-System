@@ -1,5 +1,46 @@
-﻿<h3>Index</h3>
+﻿@attribute [Authorize(Roles = "Administrator")]
+@page "/book/index"
+@using BusinessLayer;
+@using ServiceLayer;
 
-@code {
+<h3>Books</h3>
+<a href="book/create">Create</a>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Title
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Book book in model) 
+        {
+            <tr>
+                <td>
+                    @book.Title
+                </td>
+                <td>
+                    <a href="book/update/@book.ISBN/@book.Title"> Edit </a> |
+                    <a href="book/details/@book.ISBN"> Details </a> |
+                    <a href="book/delete/@book.ISBN/@book.Title/@book.Pages"> Delete </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code
+{
+    private GenericManager<Book, string> bookManager = new GenericManager<Book, string>(ContextHelper.GetBookContext());
+    private IEnumerable<Book> model = new List<Book>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await bookManager.ReadAllAsync();
+
+        await base.OnInitializedAsync();
+    }
 }

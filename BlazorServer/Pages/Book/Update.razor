@@ -1,5 +1,129 @@
-﻿<h3>Update</h3>
+﻿@page "/book/update/{ISBN}/{Title}"
+@using BusinessLayer;
+@using ServiceLayer;
+@using Microsoft.Extensions.Logging;
+@inject ErrorModel errorModel;
+@inject ILogger<Book> logger;
+@inject NavigationManager navigationManager;
 
-@code {
+<h3>Update Book</h3>
+
+<!-- Asynchronously constructing the context/model => we have to check for null! -->
+@if (editContext == null)
+{
+    <p><em>Loading ...</em></p>
+}
+else
+{
+    <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="row">
+            <label for="isbn" class="col-1">ISBN</label>
+            <InputSelect id="isbn" @bind-Value="model.ISBN" class="col-2">
+                <option value="@model.ISBN" disabled> @model.ISBN</option>
+            </InputSelect>
+
+            <label for="title" class="col-1">Title</label>
+            <InputText id="title" @bind-Value="model.Title" class="col-2"  autofocus />
+
+            <label for="pages" class="col-1">Pages</label>
+            <InputNumber id="pages" @bind-Value="model.Pages" class="col-2" />
+
+            <label for="description" class="col-1">Description</label>
+            <InputText id="description" @bind-Value="model.Description" class="col-2" />
+
+            <label for="publicationDate" class="col-1">PublicationDate</label>
+            <InputDate id="publicationDate" @bind-Value="model.PublicationDate" class="col-2" />
+        </div>
+        <div class="row mt-1">
+            <label for="author" class="col-1">Author</label>
+            <InputSelect id="author" @bind-Value="model.AuthorId" class="col-2">
+                @foreach (Author author in authors)
+                {
+                    <option value="@author.AuthorId">@author.Name</option>
+                }
+            </InputSelect>
+       
+            <label for="genre" class="col-1">Genre</label>
+            <InputSelect id="augenrethor" @bind-Value="model.GenreId" class="col-2">
+                @foreach (Genre genre in genres)
+                {
+                    <option value="@genre.GenreId">@genre.Name</option>
+                }
+            </InputSelect>
+
+            <br />
+            <button type="submit" class="col-1">Submit</button>
+        </div>
+    </EditForm>
+}
+<div>
+    <a href="book/index">Back to List</a>
+</div>
+
+@code
+{
+    private Book model;
+    private EditContext editContext;
+    private GenericManager<Book, string> bookManager = new(ContextHelper.GetBookContext());
+    private GenericManager<Author, int> authorManager = new(ContextHelper.GetAuthorContext());
+    private GenericManager<Genre, int> genreManager = new(ContextHelper.GetGenreContext());
+    private ICollection<Author> authors = new List<Author>();
+    private ICollection<Genre> genres = new List<Genre>();
+
+    [Parameter]
+    public string ISBN { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public int Pages { get; set; }
+
+    [Parameter]
+    public DateOnly PublicationDate { get; set; }
+
+    [Parameter]
+    public string Description { get; set; }
+
+    [Parameter]
+    public int AuthorId { get; set; }
+    [Parameter]
+    public int GenreId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        authors = await authorManager.ReadAllAsync();
+        genres = await genreManager.ReadAllAsync();
+        model = await bookManager.ReadAsync(ISBN);
+        model.Author = authors.Where(a => a.AuthorId == model.AuthorId).First();
+        model.Genre = genres.Where(a => a.GenreId == model.GenreId).First();
+        editContext = new EditContext(model);
+        await base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            Author author = authors.FirstOrDefault(a => a.AuthorId == model.AuthorId);
+            model.Author = author;
+            model.AuthorId = author.AuthorId;
+            Genre genre = genres.FirstOrDefault(g => g.GenreId == model.GenreId);
+            model.Genre = genre;
+            model.GenreId = genre.GenreId;
+            await bookManager.UpdateAsync(model);
+
+            logger.Log(LogLevel.Information, "Book updated successfully!");
+            navigationManager.NavigateTo("book/index", false);
+        }
+        catch (Exception ex)
+        {
+            logger.Log(LogLevel.Error, ex.Message);
+        }
+    }
 
 }
+

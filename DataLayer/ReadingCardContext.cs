@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class ReadingCardContext : IDb<ReadingCard, int>, IQueryDb<ReadingCard, int>
+    public class ReadingCardContext : IDb<ReadingCard, int>
     {
         private LibrarySystemDbContext dbContext;
 
@@ -23,7 +23,7 @@ namespace DataLayer
         {
             try
             {
-                User userFromDb = await dbContext.Users.FindAsync(item.User.Name);
+                User userFromDb = await dbContext.Users.FindAsync(item.User.UserName);
                 if(userFromDb == null)
                 {
                     item.User = userFromDb;
@@ -74,7 +74,7 @@ namespace DataLayer
             throw new NotImplementedException();
         }
 
-        public async Task<ICollection<ReadingCard>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
+        public async Task<List<ReadingCard>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace DataLayer
                 ReadingCard readingCardFromDb = await ReadAsync(item.ReadingCardId, useNavigationalProperties, false);
                 readingCardFromDb.BorrowedBooks = item.BorrowedBooks;
                 readingCardFromDb.DateCreated = item.DateCreated;
-                readingCardFromDb.Name = item.Name;
+                readingCardFromDb.UserName = item.UserName;
 
                 if (useNavigationalProperties)
                 {

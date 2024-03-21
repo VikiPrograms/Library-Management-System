@@ -19,10 +19,10 @@ namespace BusinessLayer
 
         [ForeignKey("User")]
         [DisplayName("User")]
-        public string Name {  get; set; }
+        public string UserName {  get; set; }
         [Required]
         public User User { get; set; }
-        public ICollection<Book> Books { get; set; }
+        public List<Book> Books { get; set; }
 
         public ReadingCard()
         {
@@ -31,10 +31,10 @@ namespace BusinessLayer
             Books = new List<Book>();
         }
        
-        public ReadingCard( User user, int borrowedBooks = 0)
+        public ReadingCard(User user, int borrowedBooks = 0)
         {
-            Name = user.Name;
             User = user;
+            UserName = user.UserName;
             BorrowedBooks = borrowedBooks;
             DateCreated = DateOnly.FromDateTime(DateTime.Now);
             Books = new List<Book>();

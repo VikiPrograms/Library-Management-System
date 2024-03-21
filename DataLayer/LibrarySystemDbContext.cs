@@ -19,7 +19,7 @@ namespace DataLayer
 
         public LibrarySystemDbContext(DbContextOptions options) : base(options)
         {
-
+            
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,7 +33,7 @@ namespace DataLayer
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().HasIndex(u => u.Name).IsUnique();   
+            modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();   
 
             modelBuilder.Entity<ReadingCard>()
             .Property(p => p.DateCreated)
@@ -46,6 +46,14 @@ namespace DataLayer
             .HasConversion(new DateOnlyConverter())
             .HasColumnType("date")
             .IsRequired();
+
+            modelBuilder.Entity<Author>()
+            .Property(a => a.AuthorId)
+            .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Genre>()
+            .Property(a => a.GenreId)
+            .ValueGeneratedOnAdd();
 
             base.OnModelCreating(modelBuilder);
         }
@@ -62,6 +70,5 @@ namespace DataLayer
         public DbSet<Book> Books { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<ReadingCard> ReadingCards { get; set; }
-
     }
 }

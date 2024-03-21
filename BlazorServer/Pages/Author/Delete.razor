@@ -30,24 +30,21 @@
     [Parameter]
     public string Name { get; set; }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         model = new Author(AuthorId, Name);
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
     }
 
     private async Task HandleValidSubmit()
     {
         try
         {
-            model.AuthorId = AuthorId;
-            model.Name = Name;
             await authorManager.DeleteAsync(model.AuthorId);
             logger.Log(LogLevel.Information, "Author deleted successfully!");
-            //throw new ArgumentException("Testing custom error handling!");
             navigationManager.NavigateTo("author/index");
         }
-        catch (Exception ex) // Handle concrete exceptions first!
+        catch (Exception ex)
         {
             logger.Log(LogLevel.Error, ex.Message);
         }

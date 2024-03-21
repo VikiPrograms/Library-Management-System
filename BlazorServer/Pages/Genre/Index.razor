@@ -1,8 +1,10 @@
-﻿@page "/genre/index"
+﻿@attribute [Authorize(Roles = "Administrator, User")]
+@*after that it needs to be only administrator*@
+@page "/genre/index"
 @using BusinessLayer;
 @using ServiceLayer;
 
-<h3>Index</h3>
+<h3>Genres</h3>
 <a href="genre/create">Create</a>
 
 <table class="table">

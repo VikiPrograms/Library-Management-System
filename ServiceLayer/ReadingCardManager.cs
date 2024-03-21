@@ -27,7 +27,7 @@ namespace ServiceLayer
                 return await readingCardContext.ReadAsync(key, useNavigationalProperties, isReadOnly);
         }
 
-        public async Task<ICollection<ReadingCard>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
+        public async Task<List<ReadingCard>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
         {
             return await readingCardContext.ReadAllAsync(useNavigationalProperties, isReadOnly);
         }
