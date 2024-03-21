@@ -1,8 +1,9 @@
-﻿@page "/author/index"
+﻿@attribute [Authorize(Roles = "Administrator")]
+@page "/author/index"
 @using BusinessLayer;
 @using ServiceLayer;
 
-<h3>Index</h3>
+<h3>Authors</h3>
 <a href="author/create">Create</a>
 
 <table class="table">

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class BookContext:IDb<Book, string>, IQueryDb<Book, string>
+    public class BookContext:IDb<Book, string>
     {
         private readonly LibrarySystemDbContext dbContext;
 
@@ -21,7 +21,8 @@ namespace DataLayer
         public async Task CreateAsync(Book item)
         {
             try
-            {               
+            {
+                //dbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT LibrarySystemDbContext.dbo.Books ON;");
                 dbContext.Books.Add(item);
                 await dbContext.SaveChangesAsync();
             }
@@ -35,11 +36,12 @@ namespace DataLayer
         {
             try
             {
-                Book booksFromDb = await dbContext.Books.FindAsync(key, false, false);
+                //Book booksFromDb = await dbContext.Books.FindAsync(key, false, false);
+                Book bookFromDb = await dbContext.Books.FindAsync(key);
 
-                if (booksFromDb != null)
+                if (bookFromDb != null)
                 {
-                    dbContext.Books.Remove(booksFromDb);
+                    dbContext.Books.Remove(bookFromDb);
                     await dbContext.SaveChangesAsync();
                 }
                 else
@@ -58,7 +60,7 @@ namespace DataLayer
             throw new NotImplementedException();
         }
 
-        public async Task<ICollection<Book>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
+        public async Task<List<Book>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
         {
             try
             {
@@ -102,6 +104,7 @@ namespace DataLayer
                 Book bookFromDb = await ReadAsync(item.ISBN, useNavigationalProperties, false); 
                 bookFromDb.Title = item.Title;
                 bookFromDb.Description = item.Description;
+                bookFromDb.Pages = item.Pages;
                 bookFromDb.Author = item.Author;
                 bookFromDb.PublicationDate = item.PublicationDate;
                 bookFromDb.Genre = item.Genre;                

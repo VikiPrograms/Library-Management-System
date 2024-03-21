@@ -8,31 +8,85 @@
 
 <h3>Create Book</h3>
 
-<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+<EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <label for="name">Book</label>
-    <InputText id="ISBN" @bind-Value="model.ISBN" />
+    <div class="row">
+        <label class="col-1" for="isbn">ISBN</label>
+        <InputText class="col-2" id="isbn" @bind-Value="model.ISBN" />
 
-    <button type="submit">Submit</button>
+        <label class="col-1" for="title">Title</label>
+        <InputText class="col-2" id="title" @bind-Value="model.Title" />
+
+        <label class="col-1" for="pages">Pages</label>
+        <InputNumber class="col-2" id="pages" @bind-Value="model.Pages" />
+
+        <label class="col-1" for="publicationDate">Publication Date</label>
+        <InputDate class="col-2" id="publicationDate" @bind-Value="model.PublicationDate" />
+
+        <label class="col-1" for="description">Description</label>
+        <InputText class="col-2"  id="description" @bind-Value="model.Description" />
+    </div>
+    <div class="row mt-1">
+        <label class="col-1" for="author">Author</label>
+        <InputSelect class="col-2" id="author" @bind-Value="model.AuthorId">
+            @foreach (Author author in authors)
+            {
+                <option value="@author.AuthorId">@author.Name</option>
+            }
+        </InputSelect>
+
+        <label class="col-1" for="genre">Genre</label>
+        <InputSelect class="col-2" id="genre" @bind-Value="model.GenreId">
+            @foreach (Genre genre in genres)
+            {
+                <option value="@genre.GenreId">@genre.Name</option>
+            }
+        </InputSelect>
+        <br />
+        <button type="submit" class="col-1" >Submit</button>
+    </div>
+
 
 </EditForm>
+
+<div>
+    <a href="book/index">Back to List</a>
+</div>
 
 @code {
     private Book model = new();
     private GenericManager<Book, string> bookManager = new(ContextHelper.GetBookContext());
+    private GenericManager<Author, int> authorManager = new(ContextHelper.GetAuthorContext());
+    private GenericManager<Genre, int> genreManager = new(ContextHelper.GetGenreContext());
+    private List<Author> authors = new List<Author>();
+    private List<Genre> genres = new List<Genre>();
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return base.OnInitializedAsync();
+        authors = await authorManager.ReadAllAsync(false, false);
+        model.AuthorId = authors.Count != 0 ? authors[0].AuthorId : 0;
+        genres = await genreManager.ReadAllAsync(false, false);
+        model.GenreId = genres.Count != 0 ? genres[0].GenreId : 0;
+        await base.OnInitializedAsync();
     }
+
 
     private async Task HandleValidSubmit()
     {
         try
         {
+            //model.Author = await authorManager.ReadAsync((int)model.AuthorId, false, false);
+            Author author = authors.FirstOrDefault(a => a.AuthorId == model.AuthorId);
+            model.Author = author;
+            model.AuthorId = author.AuthorId;
+            Genre genre = genres.FirstOrDefault(g => g.GenreId == model.GenreId);
+            model.Genre = genre;
+            model.GenreId = genre.GenreId;
+
             await bookManager.CreateAsync(model);
+
             logger.Log(LogLevel.Information, "Book created successfully!");
             navigationManager.NavigateTo("book/index", false);
         }
@@ -41,5 +95,4 @@
             logger.Log(LogLevel.Error, ex.Message);//not sure if this will give me some problems in the future
         }
     }
-
 }

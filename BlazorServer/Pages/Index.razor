@@ -1,13 +1,24 @@
 ﻿@page "/"
 @using BlazorServer.Services;
+@inject IJSRuntime js
 
-<h1>Hello, world!</h1>
+<PageTitle>Index</PageTitle>
 
-Welcome to your new app.
+<AuthorizeView>
+    <Authorized>
+        <h1 style="text-align: center;">Hello, @context.User.Identity.Name!</h1>
+    </Authorized>
+    <NotAuthorized>
+        <h1 style="text-align: center;">Hello, Guest!</h1>
+    </NotAuthorized>
+</AuthorizeView>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
-
-<label id="error" class="text-danger">@error</label>
+<AuthorizeView>
+    <Authorized>
+        <br /><br />
+        <button class="btn btn-outline-primary" @onclick="DisplayGreetingAlert">Display Greeting Alert</button>
+    </Authorized>
+</AuthorizeView>
 
 @code
 {
@@ -23,6 +34,17 @@ Welcome to your new app.
         {
             error = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
+
+    }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private async Task DisplayGreetingAlert()
+    {
+        var authState = await authenticationState;
+        var message = $"Hello {authState.User.Identity.Name}";
+        await js.InvokeVoidAsync("alert", message);
 
     }
 }

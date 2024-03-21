@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class GenreContext : IDb<Genre, int>, IQueryDb<Genre, int>
+    public class GenreContext : IDb<Genre, int>
     {
 
         private LibrarySystemDbContext dbContext;
@@ -73,7 +73,7 @@ namespace DataLayer
             throw new NotImplementedException();
         }
 
-        public async Task<ICollection<Genre>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
+        public async Task<List<Genre>> ReadAllAsync(bool useNavigationalProperties = false, bool isReadOnly = true)
         {
             try
             {

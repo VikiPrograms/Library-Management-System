@@ -14,7 +14,7 @@ namespace BusinessLayer
     {
         [Required]
         [MaxLength(40)]
-        public string Name { get; set; }
+        public string UserName { get; set; }
         [Required]
         [Range(6,140, ErrorMessage = "Age must be between 6 and 140!")]
         public int Age {  get; set; }
@@ -25,30 +25,28 @@ namespace BusinessLayer
             //basic constructor
         }
 
-        public User(string username, string name, int age, ReadingCard readingCard)
+        public User(string username, int age, ReadingCard readingCard)
         {
             this.UserName = username;
             this.NormalizedUserName = username.ToUpper();
-            Name = name;
             Age = age;
             ReadingCard = readingCard;
             //basic second construtor
             //do i need to add a password?
         }
 
-        public User(string username, string name, int age)
+        public User(string username, int age)
         {
             this.UserName = username;
             this.NormalizedUserName = username.ToUpper();
-            Name = name;
             Age = age;
             ReadingCard = new ReadingCard();
             //constructor where the reading card is initialized parallel to the reading card
             //do i need to add a password?
         }
 
-        public User(string id, string username, int age, string name, ReadingCard readingCard)
-            : this(username, name, age, readingCard)
+        public User(string id, string username, int age, ReadingCard readingCard)
+            : this(username, age, readingCard)
         {
             this.Id = id;
             //only changing the id
@@ -56,7 +54,7 @@ namespace BusinessLayer
 
         public override string ToString()
         {
-            return string.Format($"{Id} {Name} {Age}");
+            return string.Format($"{Id} {UserName} {Age}");
         }
 
     }

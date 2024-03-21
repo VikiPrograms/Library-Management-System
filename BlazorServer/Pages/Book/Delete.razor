@@ -1,53 +1,61 @@
-﻿@page "/author/delete/{AuthorId:int}/{Name}"
+﻿@page "/book/delete/{ISBN}/{Title}/{Pages:int}"
 @using BlazorServer.Services
 @using BusinessLayer;
 @using ServiceLayer;
 @using Microsoft.Extensions.Logging;
-@inject ILogger<Author> logger;
+@inject ILogger<Book> logger;
 @inject NavigationManager navigationManager;
 
-<h3>Delete Author</h3>
+<h3>Delete Book</h3>
 
 <EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <label for="name">Name</label>
-    <InputText id="name" @bind-Value="model.Name" disabled />
+    <label for="title">Title</label>
+    <InputText id="title" @bind-Value="model.Title" disabled />
 
+    <br/>
     <button type="submit">Delete</button>
 
 </EditForm>
 
+<div>
+    <a href="book/index">Back to List</a>
+</div>
+
 @code {
 
-    private Author model = new();
-    private GenericManager<Author, int> authorManager = new(ContextHelper.GetAuthorContext());
+    private Book model = new();
+    private GenericManager<Book, string> bookManager = new(ContextHelper.GetBookContext());
 
     [Parameter]
-    public int AuthorId { get; set; }
+    public string ISBN { get; set; }
 
     [Parameter]
-    public string Name { get; set; }
+    public string Title { get; set; }
 
-    protected override Task OnInitializedAsync()
+    [Parameter]
+    public int Pages { get; set; }
+
+    protected override async Task OnInitializedAsync()//this method was redone by me, so I may need to compare it with Mr Iliev's code
     {
-        model = new Author(AuthorId, Name);
-        return base.OnInitializedAsync();
+        //Сегашният проблем - как да го накарам да работи!?!?!
+        model = await bookManager.ReadAsync(ISBN, true);
+        //model = new Book(ISBN);
+        await base.OnInitializedAsync();
     }
 
     private async Task HandleValidSubmit()
     {
         try
         {
-            model.AuthorId = AuthorId;
-            model.Name = Name;
-            await authorManager.DeleteAsync(model.AuthorId);
-            logger.Log(LogLevel.Information, "Author deleted successfully!");
-            //throw new ArgumentException("Testing custom error handling!");
-            navigationManager.NavigateTo("author/index");
+            string deleteBook = model.ISBN;
+            await bookManager.DeleteAsync(deleteBook);
+            logger.Log(LogLevel.Information, "Book deleted successfully!");
+            navigationManager.NavigateTo("book/index");
         }
-        catch (Exception ex) // Handle concrete exceptions first!
+        catch (Exception ex)
         {
             logger.Log(LogLevel.Error, ex.Message);
         }

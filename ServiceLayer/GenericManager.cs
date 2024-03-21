@@ -21,14 +21,14 @@ namespace ServiceLayer
             await context.CreateAsync(item);
         }
 
-        public async Task<T> ReadAsync(K key, bool useNavigationalProperties = false)
+        public async Task<T> ReadAsync(K key, bool useNavigationalProperties = false, bool readOnlyTrue = true)
         {
-            return await context.ReadAsync(key);
+            return await context.ReadAsync(key, useNavigationalProperties, readOnlyTrue);
         }
 
-        public async Task<ICollection<T>> ReadAllAsync(bool useNavigationalProperties = false)
+        public async Task<List<T>> ReadAllAsync(bool useNavigationalProperties = false, bool readOnlyTrue = true)
         {
-            return await context.ReadAllAsync(useNavigationalProperties);
+            return await context.ReadAllAsync(useNavigationalProperties, readOnlyTrue);
         }
 
         public async Task UpdateAsync(T item, bool useNavigationalProperties = false)

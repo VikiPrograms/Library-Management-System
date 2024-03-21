@@ -1,5 +1,90 @@
-﻿<h3>Details</h3>
+﻿@page "/book/details/{ISBN}"
+@using BusinessLayer;
+@using ServiceLayer;
 
-@code {
+<h3>Book Details</h3>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                ISBN
+            </th>
+            <th>
+                Title
+            </th>
+            <th>
+                Pages
+            </th>
+            <th>
+                Publication Date
+            </th>
+            <th>
+                Author
+            </th>
+            <th>
+                Genre
+            </th>
+            <th>
+                Description
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (model != null)
+        {
+            <tr>
+                <td>
+                    @model.ISBN
+                </td>
+                <td>
+                    @model.Title
+                </td>
+                <td>
+                    @model.Pages
+                </td>
+                <td>
+                    @model.PublicationDate
+                </td>
+                <td>
+                    @(model.Author != null ? model.Author.Name : string.Empty)
+                </td>
+                <td>
+                    @(model.Genre != null ? model.Genre.Name : string.Empty)
+                </td>
+                <td>
+                    @model.Description
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a href="book/index">Back to List</a>
+</div>
+
+@code
+{
+    private Book model = new();
+    private GenericManager<Book, string> bookManager = new(ContextHelper.GetBookContext());
+    private GenericManager<Author, int> authorManager = new(ContextHelper.GetAuthorContext());
+    private GenericManager<Genre, int> genreManager = new(ContextHelper.GetGenreContext());
+    private ICollection<Author> authors = new List<Author>();
+    private ICollection<Genre> genres = new List<Genre>();
+
+
+    [Parameter]
+    public string ISBN { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        authors = await authorManager.ReadAllAsync();
+        genres = await genreManager.ReadAllAsync();
+        model = await bookManager.ReadAsync(ISBN, true);
+        model.Author = authors.Where(a => a.AuthorId == model.AuthorId).First();
+        model.Genre = genres.Where(a => a.GenreId == model.GenreId).First();
+
+        await base.OnInitializedAsync();
+    }
 }

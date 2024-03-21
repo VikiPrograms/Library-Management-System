@@ -30,24 +30,21 @@
     [Parameter]
     public string Name { get; set; }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         model = new Genre(GenreId, Name);
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
     }
 
     private async Task HandleValidSubmit()
     {
         try
         {
-            model.GenreId = GenreId;
-            model.Name = Name;
             await genreManager.DeleteAsync(model.GenreId);
-            logger.Log(LogLevel.Information, "Genre deleted successfully!");
-            //throw new ArgumentException("Testing custom error handling!");
+            logger.Log(LogLevel.Information, "Genre deleted successfully!");         
             navigationManager.NavigateTo("genre/index");
         }
-        catch (Exception ex) // Handle concrete exceptions first!
+        catch (Exception ex)
         {
             logger.Log(LogLevel.Error, ex.Message);
         }
