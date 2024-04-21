@@ -28,18 +28,34 @@
                         <span class="oi oi-list-rich" aria-hidden="true"></span> Genres
                     </NavLink>
                 </div>
-                @*Books*@
-                @*ReadingCards*@
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="book/index">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Books
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="readingCard/index">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Reading Cards
+                    </NavLink>
+                </div>
             </Authorized>
         </AuthorizeView>
         <AuthorizeView Roles="Administrator,User">
             <Authorized>
-                @*Home Page*@
-                @*MyReadingCard - delete from my reading list function*@
-                @*List of Books - the add to my reading list function + the max 3 books function*@
+                 <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/myreadingcard/details">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> My Reading Card
+                        @*seeing a list with all the books -> buttons add and remove(max 3)*@
+                    </NavLink>
+                </div> 
+                @*add "contacts"*@
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="Administrator">
+            <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="book/index">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Books
+                    <NavLink class="nav-link" href="/user/index">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Users                        
                     </NavLink>
                 </div>
             </Authorized>

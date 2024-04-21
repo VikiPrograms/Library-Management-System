@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataLayer
 {
-    public class LibrarySystemDbContext : IdentityDbContext<User>
+    public class LibrarySystemDbContext : IdentityDbContext<ApplicationUser>
     {
        public LibrarySystemDbContext() : base()
         {
@@ -32,9 +32,7 @@ namespace DataLayer
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();   
-
+        { 
             modelBuilder.Entity<ReadingCard>()
             .Property(p => p.DateCreated)
             .HasConversion(new DateOnlyConverter())
@@ -46,6 +44,18 @@ namespace DataLayer
             .HasConversion(new DateOnlyConverter())
             .HasColumnType("date")
             .IsRequired();
+
+            modelBuilder.Entity<Book>()
+           .Property(p => p.PickUpDate)
+           .HasConversion(new DateOnlyConverter())
+           .HasColumnType("date")
+           .IsRequired();
+
+            modelBuilder.Entity<Book>()
+            .Property(p => p.ReturnDate)
+            .HasConversion(new DateOnlyConverter())
+            .HasColumnType("date")
+            .IsRequired();  
 
             modelBuilder.Entity<Author>()
             .Property(a => a.AuthorId)

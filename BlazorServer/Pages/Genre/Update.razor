@@ -11,14 +11,19 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <InputSelect id="id" @bind-Value="model.GenreId">
-        <option value="@model.GenreId" disabled> @model.GenreId </option>
-    </InputSelect>
+    <div class="row">
+        <InputSelect id="id" @bind-Value="model.GenreId">
+            <option value="@model.GenreId" disabled> @model.GenreId </option>
+        </InputSelect>
 
-    <label for="name">Name</label>
-    <InputText id="name" @bind-Value="model.Name" />
-
-    <button type="submit">Submit</button>
+    </div>
+    <div class="row">
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="model.Name" />
+    </div>
+    <div class="row">
+        <button type="submit">Submit</button>
+    </div>
 
 </EditForm>
 

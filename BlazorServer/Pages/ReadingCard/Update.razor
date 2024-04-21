@@ -1,0 +1,120 @@
+﻿@page "/readingCard/update/{ReadingCardId:int}"
+@using BusinessLayer;
+@using Microsoft.AspNetCore.Identity
+@using ServiceLayer;
+@using Microsoft.Extensions.Logging;
+@inject ErrorModel errorModel;
+@inject ILogger<ReadingCard> logger;
+@inject NavigationManager navigationManager;
+@inject _UserManager _userManager
+@inject UserManager<ApplicationUser> userManager
+
+<h3>Update Reading Card</h3>
+
+@if (editContext == null)
+{
+    <p><em>Loading ...</em></p>
+}
+else
+{
+    <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="row">
+            <label for="userid" class="col-1">User Id</label>
+            <InputText id="userid" @bind-Value="model.UserName" class="col-2" autofocus readonly  />
+
+            <label for="username" class="col-1">Username</label>
+            <InputText id="username" @bind-Value="model.User.UserName" class="col-2" autofocus />
+        </div>
+        <div class="row">
+            <label for="datecreated" class="col-1">Date Created</label>
+            <InputDate id="datecreated" @bind-Value="model.DateCreated" class="col-2" />
+
+            <label for="Borrowed Books" class="col-1">Borrowed Books</label>
+            <InputNumber id="borrowedbooks" @bind-Value="model.BorrowedBooks" class="col-2" />
+        </div>
+        <div class="row-mt-1">
+            <button type="submit">Submit</button>
+        </div>
+
+       @*  <InputSelect id="books" multiple style="min-width:300px;" @bind-Value="selectedBooks" TValue="string">
+            @foreach (var book in books)
+            {
+                <option value="@book.ISBN">@book.Title</option>
+            }
+        </InputSelect> *@
+
+    </EditForm>
+
+    <div>
+        <a href="readingCard/index">Back to List</a>
+    </div>
+
+}
+
+@code
+{
+    private ReadingCard model = new();
+    private GenericManager<ReadingCard, int> readingCardManager = new(ContextHelper.GetReadingCardContext());
+    private GenericManager<Book, string> bookManager = new(ContextHelper.GetBookContext());
+    private ICollection<Book> books = new List<Book>();
+    private ICollection<string> selectedBooks = new List<string>();
+    private EditContext editContext;
+
+    [Parameter]
+    public int ReadingCardId { get; set; }
+
+    [Parameter]
+    public string UserName { get; set; }
+
+    [Parameter]
+    public string ISBN { get; set; }
+
+     [Parameter]
+    public DateOnly DateCreated { get; set; }
+
+    [Parameter]
+    public int BorrowedBooks { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        books = await bookManager.ReadAllAsync();
+        model = await readingCardManager.ReadAsync(ReadingCardId);
+        model.User = await userManager.FindByIdAsync(model.UserName);//UserName is null; User is null
+        selectedBooks = model.Books.Select(b => b.ISBN).ToList();
+        editContext = new EditContext(model);
+        await base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            model.Books.Clear();
+            foreach (var isbn in selectedBooks)
+            {
+                var book = await bookManager.ReadAsync(isbn);
+                if (book != null)
+                    model.Books.Add(book);
+            }
+
+            await readingCardManager.UpdateAsync(model); 
+            logger.Log(LogLevel.Information, "ReadingCard updated successfully!");
+            navigationManager.NavigateTo("readingcard/index", false);
+        }
+        catch (Exception ex)
+        {
+            logger.Log(LogLevel.Error, ex.Message);
+        }
+    }
+
+    // Method to handle selection change
+    private async Task HandleSelectionChange(ChangeEventArgs e)
+    {
+        var selectedValues = ((string[])e.Value).ToList();
+        // Update selectedBooks with the newly selected values
+        selectedBooks = selectedValues;
+    }
+}

@@ -11,6 +11,7 @@ namespace BusinessLayer
     {
         [Key]
         public int GenreId { get; set; }
+
         [Required]
         [StringLength(75)]
         public string Name { get; set; }

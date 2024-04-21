@@ -22,7 +22,6 @@ namespace DataLayer
         {
             try
             {
-                //dbContext.Database.ExecuteSqlRaw("SET IDENTITY_INSERT LibrarySystemDbContext.dbo.Books ON;");
                 dbContext.Books.Add(item);
                 await dbContext.SaveChangesAsync();
             }
@@ -107,7 +106,12 @@ namespace DataLayer
                 bookFromDb.Pages = item.Pages;
                 bookFromDb.Author = item.Author;
                 bookFromDb.PublicationDate = item.PublicationDate;
-                bookFromDb.Genre = item.Genre;                
+                bookFromDb.Genre = item.Genre;   
+                bookFromDb.PickUpDate = item.PickUpDate;
+                bookFromDb.ReturnDate = item.ReturnDate;
+                bookFromDb.ReadingCard = item.ReadingCard;
+                bookFromDb.ReadingCardId = item.ReadingCardId;
+                bookFromDb.IsPickedUp = item.IsPickedUp;
                 await dbContext.SaveChangesAsync();
             }
             catch(Exception)

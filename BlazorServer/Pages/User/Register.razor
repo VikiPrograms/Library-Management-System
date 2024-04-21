@@ -1,0 +1,71 @@
+﻿@page "/register"
+@inject IJSRuntime js
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+@inject _UserManager _userManager;
+@inject ILogger<ApplicationUser> logger;
+@using BusinessLayer
+@using ServiceLayer
+
+<EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
+            <div class="mb-3 text-center">
+                <h3>Register</h3>
+            </div>
+            <div class="mb-3">
+                <label>User Name</label>
+                <input @bind="model.UserName" class="form-control" placeholder="Username" />
+            </div>
+            <div class="mb-3">
+                <label>Email</label>
+                <input @bind="model.Email" class="form-control" placeholder="Email" />
+            </div>
+            <div class="mb-3">
+                <label>First Name</label>
+                <input @bind="model.FirstName" class="form-control" placeholder="First Name" />
+            </div>
+            <div class="mb-3">
+                <label>Last Name</label>
+                <input @bind="model.LastName" class="form-control" placeholder="Last Name" />
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <input @bind="model.Password" type="password" class="form-control" placeholder="Password" />
+            </div>
+            <div class="mb-3 d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    private ApplicationUser model = new();
+    private ICollection<Role> roles = new List<Role>() { Role.Administrator, Role.User };
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await _userManager.CreateUserAsync(model);
+            logger.Log(LogLevel.Information, "User created successfully!");
+            navManager.NavigateTo("/login", false);
+
+        }
+        catch (Exception ex)
+        {
+            logger.Log(LogLevel.Error, ex.Message);
+            Console.WriteLine("An error occurred: " + ex.Message);
+        }
+    }
+}

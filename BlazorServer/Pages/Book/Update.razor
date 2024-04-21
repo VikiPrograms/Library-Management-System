@@ -53,9 +53,26 @@ else
                     <option value="@genre.GenreId">@genre.Name</option>
                 }
             </InputSelect>
-
             <br />
             <button type="submit" class="col-1">Submit</button>
+        </div>
+        <div class="row mt-1">
+            @if(IsPickedUp == false)
+            {
+                <label for="nullpickupdate" class="col-1">PickUpDate</label>
+                <div class="col-2">No Date</div>
+
+                <label for="returnDate" class="col-1">ReturnDate</label>
+                <div class="col-2">No Date</div>
+            }
+            else
+            {
+                <label for="pickupdate" class="col-1">PickUpDate</label>
+                <InputDate id="pickupdate" @bind-Value="model.PickUpDate" class="col-2" readonly />
+
+                <label for="returnDate" class="col-1">ReturnDate</label>
+                <InputDate id="returnDate" @bind-Value="model.ReturnDate" class="col-2" readonly />
+            }         
         </div>
     </EditForm>
 }
@@ -90,8 +107,18 @@ else
 
     [Parameter]
     public int AuthorId { get; set; }
+
     [Parameter]
     public int GenreId { get; set; }
+
+    [Parameter]
+    public DateOnly PickUpDate { get; set; }
+
+    [Parameter]
+    public DateOnly ReturnDate { get; set; }
+
+    [Parameter]
+    public bool IsPickedUp{ get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,6 +129,15 @@ else
         model.Genre = genres.Where(a => a.GenreId == model.GenreId).First();
         editContext = new EditContext(model);
         await base.OnInitializedAsync();
+    }
+
+    protected async Task OverwriteDate()
+    {
+        if(model.IsPickedUp == true)//numberOfOverwrites -> this method needs to be in ReadingCard Update
+        {
+            model.PickUpDate = DateOnly.FromDateTime(DateTime.Now);
+            model.ReturnDate = PickUpDate;//+ 10 days
+        }
     }
 
     private async Task HandleValidSubmit()

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace BusinessLayer
 {
-    public class Roles
+    public enum Role
     {
-        public const string Administrator = "Administrator";
-        public const string User = "User";
+        Administrator,
+        User
     }
 
 }

@@ -13,29 +13,34 @@ namespace BusinessLayer
     {
         [Key]
         public int ReadingCardId {  get; set; }
-        [Range(0, 3, ErrorMessage ="You cannot borrow more than 3 books at the same time!")]
-        public int BorrowedBooks { get; set; }//with a method, i will count how many books there are borrowed by one user in any given time
-        public DateOnly DateCreated { get; set; }
 
         [ForeignKey("User")]
         [DisplayName("User")]
         public string UserName {  get; set; }
-        [Required]
-        public User User { get; set; }
+        public ApplicationUser User { get; set; }
         public List<Book> Books { get; set; }
 
+        [Range(0, 3, ErrorMessage = "You cannot borrow more than 3 books at the same time!")]
+        public int BorrowedBooks { get; set; }
+
+        [Range(0, 3, ErrorMessage = "You cannot overwrite more than 3 times in 6 months!")]
+        public int NumberOfOverwrites { get; set; }
+        public DateOnly DateCreated { get; set; }
+
         public ReadingCard()
-        {
+        {   
             BorrowedBooks = 0;
+            NumberOfOverwrites = 0;
             DateCreated = DateOnly.FromDateTime(DateTime.Now);
             Books = new List<Book>();
         }
        
-        public ReadingCard(User user, int borrowedBooks = 0)
+        public ReadingCard(ApplicationUser user)
         {
             User = user;
-            UserName = user.UserName;
-            BorrowedBooks = borrowedBooks;
+            UserName = user.Id;
+            BorrowedBooks = 0;
+            NumberOfOverwrites = 0;
             DateCreated = DateOnly.FromDateTime(DateTime.Now);
             Books = new List<Book>();
         }

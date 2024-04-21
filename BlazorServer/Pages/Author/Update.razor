@@ -10,15 +10,18 @@
 <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
-
-    <InputSelect id="id" @bind-Value="model.AuthorId">
-        <option value="@model.AuthorId" disabled> @model.AuthorId </option>
-    </InputSelect>
-
-    <label for="name">Name</label>
-    <InputText id="name" @bind-Value="model.Name" />
-
-    <button type="submit">Submit</button>
+    <div class="row">
+        <InputSelect id="id" @bind-Value="model.AuthorId">
+            <option value="@model.AuthorId" disabled> @model.AuthorId </option>
+        </InputSelect>
+    </div>
+    <div class="row">
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="model.Name" />
+    </div>
+    <div class="row">
+        <button type="submit">Submit</button>
+    </div>   
 
 </EditForm>
 
