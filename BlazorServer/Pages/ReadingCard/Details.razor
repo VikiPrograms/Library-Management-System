@@ -1,0 +1,95 @@
+﻿@page "/readingcard/details/{ReadingCardId:int}"
+@using BusinessLayer;
+@using Microsoft.AspNetCore.Identity
+@using ServiceLayer;
+@inject _UserManager _userManager;
+@inject UserManager<ApplicationUser> userManager;
+
+<h3>Reading Card Details</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Reading Card Id
+            </th>
+            <th>
+                Username
+            </th>
+            <th>
+                Books
+            </th>
+            <th>
+                Number Of Books
+            </th>
+            <th>
+                Number Of Overwrites
+            </th>
+            <th>
+                Date Created
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (model != null)
+        {
+            <tr>
+                <td>
+                    @model.ReadingCardId
+                </td>
+                <td>
+                    @(model.UserName != null ? model.User.UserName : string.Empty)
+                </td>                          
+                @if (model.Books.Count != 0)
+                {
+                    <td>
+                        <select value="@ISBN">
+                            @foreach (Book book in model.Books)
+                            {
+                                <option value="@book.ISBN">@book.Title</option>
+                                <a href="book/details/@book.ISBN" class="col-md-2"> Details </a>
+                            }
+                        </select>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                       There aren't any picked up books!
+                    </td>
+                }
+                <td>
+                    @model.BorrowedBooks
+                </td>
+                <td>
+                    @model.NumberOfOverwrites
+                </td>
+                <td>
+                    @model.DateCreated
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a href="readingcard/index">Back to List</a>
+</div>
+
+@code
+{
+    private ReadingCard model = new();
+    private GenericManager<ReadingCard, int> readingCardManager = new(ContextHelper.GetReadingCardContext());
+    private GenericManager<Book, string> bookManager = new(ContextHelper.GetBookContext());
+    private string ISBN;
+
+    [Parameter]
+    public int ReadingCardId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await readingCardManager.ReadAsync(ReadingCardId, true);
+        ISBN = model.Books.Count != 0 ? model.Books[0].ISBN : string.Empty;
+        await base.OnInitializedAsync();
+    }
+}

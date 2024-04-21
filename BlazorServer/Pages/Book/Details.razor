@@ -18,7 +18,7 @@
             </th>
             <th>
                 Publication Date
-            </th>
+            </th>           
             <th>
                 Author
             </th>
@@ -27,6 +27,12 @@
             </th>
             <th>
                 Description
+            </th>
+            <th>
+                Pick Up Date
+            </th>
+            <th>
+                Return Date
             </th>
         </tr>
     </thead>
@@ -45,7 +51,7 @@
                 </td>
                 <td>
                     @model.PublicationDate
-                </td>
+                </td>               
                 <td>
                     @(model.Author != null ? model.Author.Name : string.Empty)
                 </td>
@@ -54,6 +60,12 @@
                 </td>
                 <td>
                     @model.Description
+                </td>
+                <td>
+                    @(model.IsPickedUp == true ? model.PickUpDate : "No Date")
+                </td>
+                <td>
+                    @(model.IsPickedUp == true ? model.ReturnDate : "No Date")
                 </td>
             </tr>
         }

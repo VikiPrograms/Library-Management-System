@@ -1,0 +1,55 @@
+﻿@attribute [Authorize(Roles = "Administrator")]
+@page "/readingcard/index"
+@using BusinessLayer;
+@using Microsoft.AspNetCore.Identity
+@using ServiceLayer;
+@inject _UserManager _userManager;
+@inject UserManager<ApplicationUser> userManager;
+@inject SignInManager<ApplicationUser> signInManager;
+
+<h3>Reading Cards</h3>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                 Reading Card Id
+            </th>
+            <th>
+                 User Id
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (ReadingCard readingCard in models)
+        {
+            <tr>
+                <td>
+                    @readingCard.ReadingCardId
+                </td>
+                <td>
+                    @readingCard.UserName
+                </td>
+                <td>
+                    <a href="readingCard/update/@readingCard.ReadingCardId"> Edit </a> |
+                    <a href="readingCard/details/@readingCard.ReadingCardId">Details </a>                   
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private GenericManager<ReadingCard, int> readingCardManager = new GenericManager<ReadingCard, int>(ContextHelper.GetReadingCardContext());
+    private IEnumerable<ReadingCard> models = new List<ReadingCard>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = await readingCardManager.ReadAllAsync();
+        await base.OnInitializedAsync();
+    }
+
+}

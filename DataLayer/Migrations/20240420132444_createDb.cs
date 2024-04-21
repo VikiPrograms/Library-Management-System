@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataLayer.Migrations
 {
-    public partial class LibrarySystemDb : Migration
+    public partial class createDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,9 +28,10 @@ namespace DataLayer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -57,7 +58,7 @@ namespace DataLayer.Migrations
                 {
                     AuthorId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,16 +190,17 @@ namespace DataLayer.Migrations
                 {
                     ReadingCardId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     BorrowedBooks = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "date", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    NumberOfOverwrites = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ReadingCards", x => x.ReadingCardId);
                     table.ForeignKey(
-                        name: "FK_ReadingCards_AspNetUsers_Name",
-                        column: x => x.Name,
+                        name: "FK_ReadingCards_AspNetUsers_UserName",
+                        column: x => x.UserName,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -212,8 +214,13 @@ namespace DataLayer.Migrations
                     Title = table.Column<string>(type: "nvarchar(75)", maxLength: 75, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", maxLength: 5000, nullable: true),
                     Pages = table.Column<int>(type: "int", nullable: false),
+                    PublicationDate = table.Column<DateTime>(type: "date", nullable: false),
                     AuthorId = table.Column<int>(type: "int", nullable: false),
-                    ReadingCardId = table.Column<int>(type: "int", nullable: true)
+                    GenreId = table.Column<int>(type: "int", nullable: false),
+                    PickUpDate = table.Column<DateTime>(type: "date", nullable: false),
+                    ReturnDate = table.Column<DateTime>(type: "date", nullable: false),
+                    IsPickedUp = table.Column<bool>(type: "bit", nullable: false),
+                    ReadingCardId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -225,33 +232,16 @@ namespace DataLayer.Migrations
                         principalColumn: "AuthorId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Books_Genres_GenreId",
+                        column: x => x.GenreId,
+                        principalTable: "Genres",
+                        principalColumn: "GenreId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Books_ReadingCards_ReadingCardId",
                         column: x => x.ReadingCardId,
                         principalTable: "ReadingCards",
-                        principalColumn: "ReadingCardId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BookGenre",
-                columns: table => new
-                {
-                    BooksISBN = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    GenresGenreId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BookGenre", x => new { x.BooksISBN, x.GenresGenreId });
-                    table.ForeignKey(
-                        name: "FK_BookGenre_Books_BooksISBN",
-                        column: x => x.BooksISBN,
-                        principalTable: "Books",
-                        principalColumn: "ISBN",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BookGenre_Genres_GenresGenreId",
-                        column: x => x.GenresGenreId,
-                        principalTable: "Genres",
-                        principalColumn: "GenreId",
+                        principalColumn: "ReadingCardId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -288,12 +278,6 @@ namespace DataLayer.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_Name",
-                table: "AspNetUsers",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -301,14 +285,14 @@ namespace DataLayer.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookGenre_GenresGenreId",
-                table: "BookGenre",
-                column: "GenresGenreId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Books_AuthorId",
                 table: "Books",
                 column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_GenreId",
+                table: "Books",
+                column: "GenreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_ReadingCardId",
@@ -316,9 +300,9 @@ namespace DataLayer.Migrations
                 column: "ReadingCardId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReadingCards_Name",
+                name: "IX_ReadingCards_UserName",
                 table: "ReadingCards",
-                column: "Name",
+                column: "UserName",
                 unique: true);
         }
 
@@ -340,19 +324,16 @@ namespace DataLayer.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "BookGenre");
+                name: "Books");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Books");
+                name: "Authors");
 
             migrationBuilder.DropTable(
                 name: "Genres");
-
-            migrationBuilder.DropTable(
-                name: "Authors");
 
             migrationBuilder.DropTable(
                 name: "ReadingCards");

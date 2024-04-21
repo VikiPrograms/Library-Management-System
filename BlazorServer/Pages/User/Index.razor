@@ -1,0 +1,57 @@
+﻿@attribute [Authorize(Roles = "Administrator")]
+@page "/user/index"
+@using BusinessLayer;
+@using ServiceLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<ApplicationUser> logger;
+@inject NavigationManager navigationManager;
+@inject _UserManager _userManager;
+@inject UserManager<ApplicationUser> userManager;
+
+<h3>Users</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                User Id
+            </th>
+            <th>
+                Username
+            </th>
+            <th></th>
+            @*<th></th>*@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (ApplicationUser user in models)
+        {
+            <tr>
+                <td>
+                    @user.Id
+                </td>
+                <td>
+                    @user.UserName
+                </td>
+                <td>
+                    <a href="user/update/@user.UserName"> Edit </a> |
+                    <a href="user/details/@user.UserName"> Details </a> |
+                    <a href="user/delete/@user.UserName"> Delete </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code
+{
+    //private GenericManager<Book, string> bookManager = new GenericManager<Book, string>(ContextHelper.GetBookContext());
+    private IEnumerable<ApplicationUser> models = new List<ApplicationUser>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        models = await _userManager.ReadAllUsersAsync();
+
+        await base.OnInitializedAsync();
+    }
+}

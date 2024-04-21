@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -30,9 +31,22 @@ namespace BusinessLayer
         public int GenreId {  get; set; }
         public Genre Genre { get; set; }
 
+        public DateOnly? PickUpDate {  get; set; }   
+        public DateOnly? ReturnDate { get; set; }
+        public bool IsPickedUp {  get; set; }
+
+        [ForeignKey("ReadingCard")]
+        [DisplayName("ReadingCard")]
+        public int? ReadingCardId {  get; set; }
+        public ReadingCard? ReadingCard { get; set; }
+
         public Book()
         {
+            Description = string.Empty;
             PublicationDate = null;
+            PickUpDate = DateOnly.MinValue;
+            ReturnDate = DateOnly.MinValue;
+            IsPickedUp = false;
         }
 
         public Book(string iSBN, string title, int pages, DateOnly? publicationDate, string description, Author author, Genre genre)
@@ -44,8 +58,11 @@ namespace BusinessLayer
             Description = description;
             Author = author;
             AuthorId = author.AuthorId;
-            Genre = genre; //saobshtenie ot Todor - pishki pishkipishki pishki kurec chlenchik chlenchiiiiiiiiiiiiiiiiiiiiiiiik!!!!!!!!!!!!!! 
+            Genre = genre; 
             GenreId = genre.GenreId;
+            PickUpDate = DateOnly.MinValue;
+            ReturnDate = DateOnly.MinValue;
+            IsPickedUp = false;
         }
 
         public Book(string iSBN, string title, int pages, DateOnly? publicationDate, Author author, Genre genre)//additional constructor if there isn't a written description
@@ -58,9 +75,12 @@ namespace BusinessLayer
             AuthorId = author.AuthorId;
             Genre = genre;
             GenreId = genre.GenreId;
+            PickUpDate = DateOnly.MinValue;
+            ReturnDate = DateOnly.MinValue;
+            IsPickedUp = false;
         }
 
-        public Book(string iSBN)//delete constructor
+        public Book(string iSBN)
         {
             ISBN = iSBN;
         }

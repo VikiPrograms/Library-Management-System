@@ -1,0 +1,58 @@
+﻿@page "/user/delete/{UserName}"
+@using BlazorServer.Services
+@using BusinessLayer;
+@using ServiceLayer;
+@using Microsoft.Extensions.Logging;
+@inject ILogger<ApplicationUser> logger;
+@inject NavigationManager navigationManager;
+@inject _UserManager _userManager;
+@inject UserManager<ApplicationUser> userManager;
+
+<h3>Delete User</h3>
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label for="username">Username</label>
+    <InputText id="username" @bind-Value="model.UserName" disabled />
+
+    <br />
+    <button type="submit">Delete</button>
+
+</EditForm>
+
+<div>
+    <a href="user/index">Back to List</a>
+</div>
+
+@code {
+
+    private ApplicationUser model = new();
+    private GenericManager<ReadingCard, int> readingCardManager = new(ContextHelper.GetReadingCardContext());
+
+    [Parameter]
+    public string UserName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Сегашният проблем - как да го накарам да работи!?!?!
+        model = await userManager.FindByNameAsync(UserName);
+        //model = new Book(ISBN);
+        await base.OnInitializedAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await userManager.DeleteAsync(model);
+            logger.Log(LogLevel.Information, "User deleted successfully!");
+            navigationManager.NavigateTo("user/index");
+        }
+        catch (Exception ex)
+        {
+            logger.Log(LogLevel.Error, ex.Message);
+        }
+    }
+}

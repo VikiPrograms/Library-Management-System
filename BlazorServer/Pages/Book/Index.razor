@@ -1,7 +1,11 @@
-﻿@attribute [Authorize(Roles = "Administrator")]
-@page "/book/index"
+﻿@page "/book/index"
 @using BusinessLayer;
 @using ServiceLayer;
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject _UserManager _userManager;
+@inject UserManager<ApplicationUser> userManager;
+@inject ILogger<ApplicationUser> logger;
 
 <h3>Books</h3>
 <a href="book/create">Create</a>
@@ -13,19 +17,29 @@
                 Title
             </th>
             <th></th>
+            @*<th></th>*@
         </tr>
     </thead>
     <tbody>
-        @foreach (Book book in model) 
+        @foreach (Book book in models) 
         {
             <tr>
                 <td>
                     @book.Title
                 </td>
                 <td>
-                    <a href="book/update/@book.ISBN/@book.Title"> Edit </a> |
+                    <AuthorizeView Roles="Administrator">
+                        <Authorized>
+                            <a href="book/update/@book.ISBN/@book.Title"> Edit </a> |
+                        </Authorized>
+                    </AuthorizeView>
                     <a href="book/details/@book.ISBN"> Details </a> |
-                    <a href="book/delete/@book.ISBN/@book.Title/@book.Pages"> Delete </a>
+                    <AuthorizeView Roles="Administrator">
+                        <Authorized>
+                            <a href="book/delete/@book.ISBN/@book.Title/@book.Pages"> Delete </a> |
+                        </Authorized>
+                    </AuthorizeView>
+                    <button @onclick="() => AddBookToMyReadingCard(book)">Add to My Reading Card</button>
                 </td>
             </tr>
         }
@@ -35,12 +49,61 @@
 @code
 {
     private GenericManager<Book, string> bookManager = new GenericManager<Book, string>(ContextHelper.GetBookContext());
-    private IEnumerable<Book> model = new List<Book>();
+    private GenericManager<ReadingCard, int> readingCardManager = new GenericManager<ReadingCard, int>(ContextHelper.GetReadingCardContext());
+    private IEnumerable<Book> models = new List<Book>();
+    private ApplicationUser currentUser;
+
+    [Parameter]
+    public string UserName{ get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        model = await bookManager.ReadAllAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            // Retrieve the username from claims
+            UserName = user.Identity.Name;
+            currentUser = await userManager.FindByNameAsync(UserName);
+            currentUser = await _userManager.ReadUserAsync(currentUser.Id, true);
+        }
+        models = await bookManager.ReadAllAsync(true, false);
 
         await base.OnInitializedAsync();
     }
+
+    private async Task AddBookToMyReadingCard(Book book)
+    {
+        if (currentUser != null)
+        {
+
+            if (currentUser.ReadingCard == null)
+            {
+                currentUser.ReadingCard = new ReadingCard(currentUser);
+            }
+
+            if (currentUser.ReadingCard.Books.Any(b => b.ISBN == book.ISBN))
+            {
+                logger.LogInformation("The book is already in the reading card.");
+            }
+            else
+            {
+                book.ReadingCard = currentUser.ReadingCard;
+                book.ReadingCardId = currentUser.ReadingCard.ReadingCardId;
+                currentUser.ReadingCard.Books.Add(book);
+                currentUser.ReadingCard.BorrowedBooks += 1;
+                book.IsPickedUp = true;
+                await bookManager.UpdateAsync(book);
+                await readingCardManager.UpdateAsync(currentUser.ReadingCard);
+                await _userManager.UpdateUserAsync(currentUser, true);
+                logger.LogInformation("The book has been added to the reading card.");
+            }
+        }
+        else
+        {
+            throw new ArgumentException("The current user is not logged in.");
+        }
+    }
+
 }

@@ -23,7 +23,7 @@ namespace DataLayer
         {
             try
             {
-                User userFromDb = await dbContext.Users.FindAsync(item.User.UserName);
+                ApplicationUser userFromDb = await dbContext.Users.FindAsync(item.User.UserName);
                 if(userFromDb == null)
                 {
                     item.User = userFromDb;
@@ -105,19 +105,20 @@ namespace DataLayer
 
                 if (useNavigationalProperties)
                 {
-                    query = query.Include(o => o.Books).Include(u => u.User);
+                    query = query.Include(rc => rc.User).Include(rc => rc.Books);
                 }
                 if (isReadOnly)
                 {
                     query = query.AsNoTrackingWithIdentityResolution();
                 }
 
-                return await query.FirstOrDefaultAsync(o => o.ReadingCardId == key);
+                return await query.FirstOrDefaultAsync(rc => rc.ReadingCardId == key);
             }
             catch (Exception)
             {
                 throw;
             }
+
         }
 
         public async Task UpdateAsync(ReadingCard item, bool useNavigationalProperties = false)
@@ -126,12 +127,14 @@ namespace DataLayer
             {
                 ReadingCard readingCardFromDb = await ReadAsync(item.ReadingCardId, useNavigationalProperties, false);
                 readingCardFromDb.BorrowedBooks = item.BorrowedBooks;
+                readingCardFromDb.NumberOfOverwrites = item.NumberOfOverwrites;
                 readingCardFromDb.DateCreated = item.DateCreated;
                 readingCardFromDb.UserName = item.UserName;
+                //how do i add the name of the user to be updated
 
                 if (useNavigationalProperties)
                 {
-                    User userFromDb = await dbContext.Users.FindAsync(item.User.Id);
+                    ApplicationUser userFromDb = await dbContext.Users.FindAsync(item.User.Id);
 
                     if (userFromDb != null)
                     {

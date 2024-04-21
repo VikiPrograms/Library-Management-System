@@ -1,0 +1,79 @@
+﻿@page "/user/details/{UserName}"
+@using BusinessLayer;
+@using ServiceLayer;
+@inject ILogger<ApplicationUser> logger;
+@inject UserManager<ApplicationUser> userManager;
+@inject _UserManager _userManager;
+
+<h3>User Details</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                User Name
+            </th>
+            <th>
+                First Name
+            </th>
+            <th>
+                Last Name
+            </th>
+            <th>
+                Role
+            </th>
+            <th>
+                Reading Card Id
+            </th>        
+        </tr>
+    </thead>
+    <tbody>
+        @if (model != null)
+        {
+            <tr>
+                <td>
+                    @model.UserName
+                </td>
+                <td>
+                    @model.FirstName
+                </td>
+                <td>
+                    @model.LastName
+                </td>
+                <td>
+                    @model.Role
+                </td>
+                <td>
+                    @model.ReadingCard.ReadingCardId
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a href="user/index">Back to List</a>
+</div>
+
+@code
+{
+    private ApplicationUser model;
+    private GenericManager<ReadingCard, int> readingCardManager = new(ContextHelper.GetReadingCardContext());
+    private ICollection<ReadingCard> readingCards = new List<ReadingCard>();
+
+    [Parameter]
+    public string Username{ get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Username))
+        {
+            model = await userManager.FindByNameAsync(Username);
+            model = await _userManager.ReadUserAsync(model.Id, true);
+        }
+        else
+        {
+            logger.Log(LogLevel.Information, "Username or User is null!");
+        }
+    }
+}

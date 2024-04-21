@@ -83,7 +83,7 @@
             model.AuthorId = author.AuthorId;
             Genre genre = genres.FirstOrDefault(g => g.GenreId == model.GenreId);
             model.Genre = genre;
-            model.GenreId = genre.GenreId;
+            model.GenreId = genre.GenreId;  
 
             await bookManager.CreateAsync(model);
 

@@ -1,8 +1,12 @@
 ﻿@page "/login"
-@inject UserAccountService userAccountService
 @inject IJSRuntime js
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
+@inject _UserManager _userManager
+@inject UserManager<ApplicationUser> userIdentityManager
+@using BusinessLayer
+@using Microsoft.AspNetCore.Identity
+@using ServiceLayer
 
 <div class="row">
     <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
@@ -31,10 +35,10 @@
         public string Password { get; set; }
 
     }
-    private Model model = new Model();
+    private ApplicationUser model = new ApplicationUser();
     private async Task Authenticate()
     {
-        var userAccount = userAccountService.GetByUserName(model.UserName);
+        var userAccount = await userIdentityManager.FindByNameAsync(model.UserName);
         if(userAccount == null || userAccount.Password != model.Password)
         {
             await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
