@@ -17,7 +17,7 @@
                 Username
             </th>
             <th>
-                Books
+                Book Titles
             </th>
             <th>
                 Number Of Books
@@ -43,13 +43,10 @@
                 @if (model.Books.Count != 0)
                 {
                     <td>
-                        <select value="@ISBN">
-                            @foreach (Book book in model.Books)
-                            {
-                                <option value="@book.ISBN">@book.Title</option>
-                                <a href="book/details/@book.ISBN" class="col-md-2"> Details </a>
-                            }
-                        </select>
+                        @foreach (Book book in model.Books)
+                        {
+                            <a href="book/details/@book.ISBN/@book.Title" class="col-md-2"> @book.Title</a>
+                        }
                     </td>
                 }
                 else
@@ -57,7 +54,7 @@
                     <td>
                        There aren't any picked up books!
                     </td>
-                }
+                }             
                 <td>
                     @model.BorrowedBooks
                 </td>

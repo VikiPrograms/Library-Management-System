@@ -16,8 +16,6 @@ namespace BusinessLayer
         [Required]
         public string LastName { get; set; }
         public  Role Role{ get; set; }
-
-        //foreign key later
         public ReadingCard ReadingCard { get; set; }
 
         [Required]

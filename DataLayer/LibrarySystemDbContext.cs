@@ -30,7 +30,6 @@ namespace DataLayer
             }
             base.OnConfiguring(optionsBuilder);
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         { 
             modelBuilder.Entity<ReadingCard>()
@@ -72,9 +71,7 @@ namespace DataLayer
         {
             public DateOnlyConverter() : base(
                 dateOnly => DateTime.Parse(dateOnly.ToString("yyyy-MM-dd")),
-                dateTime => DateOnly.FromDateTime(dateTime.Date))
-            {
-            }
+                dateTime => DateOnly.FromDateTime(dateTime.Date)){}
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }

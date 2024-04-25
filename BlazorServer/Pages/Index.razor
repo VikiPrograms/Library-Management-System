@@ -6,17 +6,27 @@
 
 <AuthorizeView>
     <Authorized>
-        <h1 style="text-align: center;">Hello, @context.User.Identity.Name!</h1>
+        <h2 style="text-align: center;">Hello, @context.User.Identity.Name!</h2>
+        <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
+        <div style="justify-content: center; align-items: center; min-height: 100vh;">
+            <h1 style="text-align: center; "> Welcome to E-Library: </h1>
+            <h4 style="text-align: center;"> The best digital library archive </h4>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <h1 style="text-align: center;">Hello, Guest!</h1>
+        <br />
+        <h2 style="text-align: center;">Hello, Guest!</h2>
+        <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> 
+        <div style="justify-content: center; align-items: center; min-height: 100vh;">
+            <h1 style="text-align: center; "> Welcome to E-Library: </h1>
+            <h4 style="text-align: center;"> The best digital library archive </h4>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
 
 <AuthorizeView>
     <Authorized>
         <br /><br />
-        <button class="btn btn-outline-primary" @onclick="DisplayGreetingAlert">Display Greeting Alert</button>
     </Authorized>
 </AuthorizeView>
 

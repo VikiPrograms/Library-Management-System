@@ -39,7 +39,7 @@
                             <a href="book/delete/@book.ISBN/@book.Title/@book.Pages"> Delete </a> |
                         </Authorized>
                     </AuthorizeView>
-                    <button @onclick="() => AddBookToMyReadingCard(book)">Add to My Reading Card</button>
+                    <button @onclick="() => AddBookToMyReadingCard(book)">Add to My Reading Card</button> 
                 </td>
             </tr>
         }
@@ -89,14 +89,21 @@
             }
             else
             {
+                ReadingCard rc = await readingCardManager.ReadAsync(currentUser.ReadingCard.ReadingCardId);
+
                 book.ReadingCard = currentUser.ReadingCard;
                 book.ReadingCardId = currentUser.ReadingCard.ReadingCardId;
+                DateTime pickUpDateTime = DateTime.Now;
+                DateTime returnDateTime = pickUpDateTime.AddDays(30);
+                book.PickUpDate = DateOnly.FromDateTime(pickUpDateTime.Date);
+                book.ReturnDate = DateOnly.FromDateTime(returnDateTime.Date);
+                book.IsPickedUp = true;
+
                 currentUser.ReadingCard.Books.Add(book);
                 currentUser.ReadingCard.BorrowedBooks += 1;
-                book.IsPickedUp = true;
-                await bookManager.UpdateAsync(book);
-                await readingCardManager.UpdateAsync(currentUser.ReadingCard);
-                await _userManager.UpdateUserAsync(currentUser, true);
+
+                rc.Books.Add(book);
+                await readingCardManager.UpdateAsync(rc, true);
                 logger.LogInformation("The book has been added to the reading card.");
             }
         }

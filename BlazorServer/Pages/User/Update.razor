@@ -21,8 +21,8 @@ else
         <ValidationSummary />
 
         <div class="row">
-             <label for="username" class="col-1">Username</label>
-            <InputText id="username" @bind-Value="model.UserName" class="col-2" readonly />
+            @*  <label for="username" class="col-1">Username</label>
+            <InputText id="username" @bind-Value="model.UserName" class="col-2" readonly /> *@
 
             <label for="firstname" class="col-1">First Name</label>
             <InputText id="firstname" @bind-Value="model.FirstName" class="col-2" autofocus />
@@ -35,9 +35,11 @@ else
             </InputSelect>
 
             @* <label for="readingcardid" class="col-1">Reading Card Id</label>
-            <InputNumber id="readingcardid" @bind-Value="model.ReadingCard.ReadingCardId" class="col-2" /> *@
-
-        </div>   
+            <InputNumber id="readingcardid" @bind-Value="model.ReadingCard.ReadingCardId" class="col-2" /> *@          
+        </div>
+        <div class="row">
+            <a href="@($"/readingCard/update/{@model.ReadingCard.ReadingCardId}")">Update Reading Card</a>
+        </div>
             <br />
             <button type="submit" class="col-1">Submit</button>
     </EditForm>

@@ -46,7 +46,7 @@
     {
         try
         {
-            await userManager.DeleteAsync(model);
+            await _userManager.DeleteUserAsync(model.Id);
             logger.Log(LogLevel.Information, "User deleted successfully!");
             navigationManager.NavigateTo("user/index");
         }

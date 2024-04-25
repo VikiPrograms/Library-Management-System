@@ -134,7 +134,7 @@ namespace DataLayer
 
                 if (useNavigationalProperties)
                 {
-                    ApplicationUser userFromDb = await dbContext.Users.FindAsync(item.User.Id);
+                    ApplicationUser userFromDb = await dbContext.Users.FindAsync(item.UserName);
 
                     if (userFromDb != null)
                     {
