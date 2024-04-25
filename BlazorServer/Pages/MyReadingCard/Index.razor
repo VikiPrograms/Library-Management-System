@@ -11,50 +11,79 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Reading Card Id</th>
-                    <th>Username</th>
-                    <th>Books</th>
-                    <th>Number Of Books</th>
-                    <th>Number Of Overwrites</th>
-                    <th>Date Created</th>
+                    <th>
+                        Reading Card Id
+                    </th>
+                    <th>
+                        Username
+                    </th>
+                    <th>
+                        Book Titles
+                    </th>
+                    <th>
+                        Number Of Books
+                    </th>
+                    <th>
+                        Number Of Overwrites
+                    </th>
+                    <th>
+                        Date Created
+                    </th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>@model.ReadingCardId</td>
-                    <td>@model.User.UserName</td>
-                    <td>
-                        @if (model.Books.Count > 0)
+                @if (model != null)
+                {
+                    <tr>
+                        <td>
+                            @model.ReadingCardId
+                        </td>
+                        <td>
+                            @(model.UserName != null ? model.User.UserName : string.Empty)
+                        </td>
+                        @if (model.Books.Count != 0)
                         {
-                            <ul>
-                                @foreach (var book in model.Books)
+                            <td>
+                                @foreach (Book book in model.Books)
                                 {
-                                    <li>@book.Title</li>
+                                    <a href="book/details/@book.ISBN" class="col-md-2"> @book.Title</a>
                                 }
-                            </ul>
+                            </td>
                         }
                         else
                         {
-                            <div>
-                                No books were borrowed!
-                            </div>
+                            <td>
+                                There aren't any picked up books!
+                            </td>
                         }
-                    </td>
-                    <td>@model.BorrowedBooks</td>
-                    <td>@model.NumberOfOverwrites</td>
-                    <td>@model.DateCreated</td>
-                </tr>
+                        <td>
+                            @model.BorrowedBooks
+                        </td>
+                        <td>
+                            @model.NumberOfOverwrites
+                        </td>
+                        <td>
+                            @model.DateCreated
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
+
+        <br />
+        <div>
+            <button>Overwrite Books</button>
+        </div>
+        <br />
+        <div>
+            <a href="book/index">Go to Books</a>
+        </div>
     }
     else
     {
         <p>Loading...</p>
     }
 
-    <div>
-        <a href="book/index">Go to Books</a>
-    </div>
 
     @code {
         private ReadingCard model;

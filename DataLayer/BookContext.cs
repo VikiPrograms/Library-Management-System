@@ -1,5 +1,6 @@
 ﻿using BusinessLayer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace DataLayer
 
                 if (bookFromDb != null)
                 {
-                    dbContext.Books.Remove(bookFromDb);
+                        dbContext.Books.Remove(bookFromDb);
                     await dbContext.SaveChangesAsync();
                 }
                 else
@@ -100,18 +101,22 @@ namespace DataLayer
         {
             try
             {
-                Book bookFromDb = await ReadAsync(item.ISBN, useNavigationalProperties, false); 
+                Book bookFromDb = await ReadAsync(item.ISBN, useNavigationalProperties, false);
                 bookFromDb.Title = item.Title;
                 bookFromDb.Description = item.Description;
                 bookFromDb.Pages = item.Pages;
-                bookFromDb.Author = item.Author;
                 bookFromDb.PublicationDate = item.PublicationDate;
-                bookFromDb.Genre = item.Genre;   
                 bookFromDb.PickUpDate = item.PickUpDate;
                 bookFromDb.ReturnDate = item.ReturnDate;
-                bookFromDb.ReadingCard = item.ReadingCard;
-                bookFromDb.ReadingCardId = item.ReadingCardId;
                 bookFromDb.IsPickedUp = item.IsPickedUp;
+
+                if (useNavigationalProperties)
+                {                  
+                    bookFromDb.Author = item.Author;                   
+                    bookFromDb.Genre = item.Genre;                    
+                    bookFromDb.ReadingCard = item.ReadingCard;
+                    bookFromDb.ReadingCardId = item.ReadingCardId;
+                }
                 await dbContext.SaveChangesAsync();
             }
             catch(Exception)

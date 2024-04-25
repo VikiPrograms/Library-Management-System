@@ -20,14 +20,7 @@ else
     <EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
-
-        <div class="row">
-            <label for="userid" class="col-1">User Id</label>
-            <InputText id="userid" @bind-Value="model.UserName" class="col-2" autofocus readonly  />
-
-            <label for="username" class="col-1">Username</label>
-            <InputText id="username" @bind-Value="model.User.UserName" class="col-2" autofocus />
-        </div>
+       
         <div class="row">
             <label for="datecreated" class="col-1">Date Created</label>
             <InputDate id="datecreated" @bind-Value="model.DateCreated" class="col-2" />
@@ -47,7 +40,38 @@ else
         </InputSelect> *@
 
     </EditForm>
-
+    <AuthorizeView Roles="Administrator">
+        <Authorized>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Book Titles
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        @if (model.Books.Count != 0)
+                        {
+                            <td>
+                                @foreach (Book book in model.Books)
+                                {
+                                    <a href="book/update/@book.ISBN" class="col-md-2"> @book.Title</a>
+                                }
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                There aren't any picked up books!
+                            </td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </Authorized>
+    </AuthorizeView>
     <div>
         <a href="readingCard/index">Back to List</a>
     </div>

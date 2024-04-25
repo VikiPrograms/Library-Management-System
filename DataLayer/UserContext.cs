@@ -216,8 +216,8 @@ namespace DataLayer
                     throw new ArgumentException("There is no user in the database with that id!");
                 }
 
-                context.Users.Remove(user);
                 context.ReadingCards.Remove(readingCard);
+                context.Users.Remove(user);
                 await context.SaveChangesAsync();
             }
             catch (Exception)
