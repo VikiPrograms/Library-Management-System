@@ -53,16 +53,14 @@ else
                     <option value="@genre.GenreId">@genre.Name</option>
                 }
             </InputSelect>
-            <br />
-            <button type="submit" class="col-1">Submit</button>
         </div>
         <div class="row mt-1">
-            @if(IsPickedUp == false)
+            @if(model.IsPickedUp == false)
             {
                 <label for="nullpickupdate" class="col-1">PickUpDate</label>
                 <div class="col-2">No Date</div>
 
-                <label for="returnDate" class="col-1">ReturnDate</label>
+                <label for="nullreturnDate" class="col-1">ReturnDate</label>
                 <div class="col-2">No Date</div>
             }
             else
@@ -73,6 +71,10 @@ else
                 <label for="returnDate" class="col-1">ReturnDate</label>
                 <InputDate id="returnDate" @bind-Value="model.ReturnDate" class="col-2" readonly />
             }         
+        </div>
+        <div>
+            <br />
+            <button type="submit" class="col-1">Submit</button>
         </div>
     </EditForm>
 }

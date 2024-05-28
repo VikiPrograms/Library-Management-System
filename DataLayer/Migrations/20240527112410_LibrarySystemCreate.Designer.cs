@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(LibrarySystemDbContext))]
-    [Migration("20240420132444_createDb")]
-    partial class createDb
+    [Migration("20240527112410_LibrarySystemCreate")]
+    partial class LibrarySystemCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.27")
+                .HasAnnotation("ProductVersion", "6.0.26")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -149,7 +149,7 @@ namespace DataLayer.Migrations
                     b.Property<DateTime>("PublicationDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("ReadingCardId")
+                    b.Property<int?>("ReadingCardId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReturnDate")
@@ -367,9 +367,7 @@ namespace DataLayer.Migrations
 
                     b.HasOne("BusinessLayer.ReadingCard", "ReadingCard")
                         .WithMany("Books")
-                        .HasForeignKey("ReadingCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReadingCardId");
 
                     b.Navigation("Author");
 

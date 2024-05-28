@@ -67,6 +67,7 @@
             UserName = user.Identity.Name;
             currentUser = await userManager.FindByNameAsync(UserName);
             currentUser = await _userManager.ReadUserAsync(currentUser.Id, true);
+            //currentUser.ReadingCard = await readingCardManager.ReadAsync(currentUser.ReadingCard.ReadingCardId, true, false);
         }
         models = await bookManager.ReadAllAsync(true, false);
 
@@ -75,7 +76,7 @@
 
     private async Task AddBookToMyReadingCard(Book book)
     {
-        if (currentUser != null)
+        if (currentUser != null || book.IsPickedUp == false)
         {
 
             if (currentUser.ReadingCard == null)
@@ -89,7 +90,7 @@
             }
             else
             {
-                ReadingCard rc = await readingCardManager.ReadAsync(currentUser.ReadingCard.ReadingCardId);
+                ReadingCard rc = await readingCardManager.ReadAsync(currentUser.ReadingCard.ReadingCardId, true);
 
                 book.ReadingCard = currentUser.ReadingCard;
                 book.ReadingCardId = currentUser.ReadingCard.ReadingCardId;
@@ -98,18 +99,24 @@
                 book.PickUpDate = DateOnly.FromDateTime(pickUpDateTime.Date);
                 book.ReturnDate = DateOnly.FromDateTime(returnDateTime.Date);
                 book.IsPickedUp = true;
+                rc.BorrowedBooks = rc.Books.Count;
+                if(rc.BorrowedBooks <= 3)
+                {
+                    rc.Books.Add(book);                 
+                    rc.BorrowedBooks = rc.Books.Count;
+                }
+                else
+                {
+                    throw new ArgumentException("The Borrowed Books can be maximum 3!");
+                }
 
-                currentUser.ReadingCard.Books.Add(book);
-                currentUser.ReadingCard.BorrowedBooks += 1;
-
-                rc.Books.Add(book);
                 await readingCardManager.UpdateAsync(rc, true);
                 logger.LogInformation("The book has been added to the reading card.");
             }
         }
         else
         {
-            throw new ArgumentException("The current user is not logged in.");
+            throw new ArgumentException("THe book is already picked up by anoter reader.");
         }
     }
 

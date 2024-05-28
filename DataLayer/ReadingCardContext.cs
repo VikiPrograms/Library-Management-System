@@ -60,7 +60,7 @@ namespace DataLayer
                 if(readingCardFromDb != null)
                 {
                     dbContext.ReadingCards.Remove(readingCardFromDb);
-                    dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
                 }
             }
             catch (Exception)

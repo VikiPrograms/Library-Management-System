@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataLayer.Migrations
 {
-    public partial class createDb : Migration
+    public partial class LibrarySystemCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -220,7 +220,7 @@ namespace DataLayer.Migrations
                     PickUpDate = table.Column<DateTime>(type: "date", nullable: false),
                     ReturnDate = table.Column<DateTime>(type: "date", nullable: false),
                     IsPickedUp = table.Column<bool>(type: "bit", nullable: false),
-                    ReadingCardId = table.Column<int>(type: "int", nullable: false)
+                    ReadingCardId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -241,8 +241,7 @@ namespace DataLayer.Migrations
                         name: "FK_Books_ReadingCards_ReadingCardId",
                         column: x => x.ReadingCardId,
                         principalTable: "ReadingCards",
-                        principalColumn: "ReadingCardId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ReadingCardId");
                 });
 
             migrationBuilder.CreateIndex(

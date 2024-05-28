@@ -17,9 +17,6 @@
                 Username
             </th>
             <th>
-                Book Titles
-            </th>
-            <th>
                 Number Of Books
             </th>
             <th>
@@ -39,22 +36,7 @@
                 </td>
                 <td>
                     @(model.UserName != null ? model.User.UserName : string.Empty)
-                </td>                          
-                @if (model.Books.Count != 0)
-                {
-                    <td>
-                        @foreach (Book book in model.Books)
-                        {
-                            <a href="book/details/@book.ISBN/@book.Title" class="col-md-2"> @book.Title</a>
-                        }
-                    </td>
-                }
-                else
-                {
-                    <td>
-                       There aren't any picked up books!
-                    </td>
-                }             
+                </td>
                 <td>
                     @model.BorrowedBooks
                 </td>
@@ -64,6 +46,31 @@
                 <td>
                     @model.DateCreated
                 </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+    <th>
+        Book Titles
+    </th>
+    </thead>
+    <tbody>
+        @if (model != null && model.Books.Count != 0)
+        {
+            @foreach (Book book in model.Books)
+            {
+                <tr>
+                    <td><a href="book/details/@book.ISBN" class="col-md-2"> @book.Title</a></td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                There aren't any picked up books!
             </tr>
         }
     </tbody>

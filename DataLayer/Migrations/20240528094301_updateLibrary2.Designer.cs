@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(LibrarySystemDbContext))]
-    [Migration("20240420133845_createDb2")]
-    partial class createDb2
+    [Migration("20240528094301_updateLibrary2")]
+    partial class updateLibrary2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

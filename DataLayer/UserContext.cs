@@ -209,7 +209,7 @@ namespace DataLayer
         {
             try
             {
-                ApplicationUser user = await ReadUserAsync(id);
+                ApplicationUser user = await ReadUserAsync(id, true);
                 ReadingCard readingCard = user.ReadingCard;
                 if (user == null)
                 {

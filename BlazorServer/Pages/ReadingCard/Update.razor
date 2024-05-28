@@ -40,38 +40,37 @@ else
         </InputSelect> *@
 
     </EditForm>
-    <AuthorizeView Roles="Administrator">
-        <Authorized>
-            <table class="table">
-                <thead>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Book Titles
+                    </th>
+                    <th>
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (model.Books.Count != 0)
+                {
+                    @foreach (Book book in model.Books)
+                    {
+                        <tr>
+                            <td> <a href="/book/update/@book.ISBN/@book.Title" class="col-md-2"> @book.Title</a> </td>
+                            <td> <button @onclick="() => ReturnBookToLibrary(book)">Return Book</button> </td>
+                        </tr>
+                    }
+                }
+                else
+                {
                     <tr>
-                        <th>
-                            Book Titles
-                        </th>
+                        <td>There aren't any picked up books!</td>
+                        <td> </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        @if (model.Books.Count != 0)
-                        {
-                            <td>
-                                @foreach (Book book in model.Books)
-                                {
-                                    <a href="book/update/@book.ISBN" class="col-md-2"> @book.Title</a>
-                                }
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                There aren't any picked up books!
-                            </td>
-                        }
-                    </tr>
-                </tbody>
-            </table>
-        </Authorized>
-    </AuthorizeView>
+                }
+            </tbody>
+        </table>
     <div>
         <a href="readingCard/index">Back to List</a>
     </div>
@@ -96,7 +95,7 @@ else
     [Parameter]
     public string ISBN { get; set; }
 
-     [Parameter]
+    [Parameter]
     public DateOnly DateCreated { get; set; }
 
     [Parameter]
@@ -105,9 +104,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         books = await bookManager.ReadAllAsync();
-        model = await readingCardManager.ReadAsync(ReadingCardId);
+        model = await readingCardManager.ReadAsync(ReadingCardId, true);
         model.User = await userManager.FindByIdAsync(model.UserName);//UserName is null; User is null
-        selectedBooks = model.Books.Select(b => b.ISBN).ToList();
         editContext = new EditContext(model);
         await base.OnInitializedAsync();
     }
@@ -116,13 +114,13 @@ else
     {
         try
         {
-            model.Books.Clear();
-            foreach (var isbn in selectedBooks)
-            {
-                var book = await bookManager.ReadAsync(isbn);
-                if (book != null)
-                    model.Books.Add(book);
-            }
+            // model.Books.Clear();
+            // foreach (var isbn in selectedBooks)
+            // {
+            //     var book = await bookManager.ReadAsync(isbn);
+            //     if (book != null)
+            //         model.Books.Add(book);
+            // }
 
             await readingCardManager.UpdateAsync(model); 
             logger.Log(LogLevel.Information, "ReadingCard updated successfully!");
@@ -135,10 +133,19 @@ else
     }
 
     // Method to handle selection change
-    private async Task HandleSelectionChange(ChangeEventArgs e)
+    private async Task ReturnBookToLibrary(Book book)
     {
-        var selectedValues = ((string[])e.Value).ToList();
-        // Update selectedBooks with the newly selected values
-        selectedBooks = selectedValues;
+        if(book.IsPickedUp == true)
+        {
+            model.Books.Remove(book);
+            model.BorrowedBooks -= 1;         
+            book.IsPickedUp = false;
+            DateTime pickUpDateTime = DateTime.Now;
+            DateTime returnDateTime = pickUpDateTime.AddDays(30);
+            book.PickUpDate = DateOnly.FromDateTime(pickUpDateTime.Date);
+            book.ReturnDate = DateOnly.FromDateTime(returnDateTime.Date);
+
+            await readingCardManager.UpdateAsync(model, true);
+        }
     }
 }
